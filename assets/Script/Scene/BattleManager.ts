@@ -1,6 +1,8 @@
 import { _decorator, Component, Node } from 'cc'
+import { EVENT_ENUM } from '../../Enum'
 import levels, { ILevel } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
+import EventManager from '../../Runtime/EventManager'
 import { createUINode } from '../../Util'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 const { ccclass } = _decorator
@@ -12,25 +14,48 @@ export class BattleManager extends Component {
     level: ILevel
     stage: Node
 
+    onLoad() {
+        EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
+    }
+
+    onDestroy() {
+        EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
+    }
+
     start() {
         this.generateStage()
         this.initLevel()
     }
 
     initLevel() {
-        const level = levels[`level${1}`]
+        const level = levels[`level${DataManager.Instance.levelIndex}`]
         if (level) {
+            this.clearLevel()
+
             // 储存关卡等级
             this.level = level
+
             // 储存地图信息
             DataManager.Instance.mapInfo = this.level.mapInfo
             DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
             DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length || 0
+
             // 生成地图
             this.generateTileMap()
         }
     }
 
+    nextLevel() {
+        DataManager.Instance.levelIndex++
+        this.initLevel()
+    }
+
+    clearLevel() {
+        //消除上一关的所有游戏对象
+        this.stage.destroyAllChildren()
+        //数据中心重置
+        DataManager.Instance.reset()
+    }
     generateStage() {
         //创建舞台
         this.stage = createUINode()
