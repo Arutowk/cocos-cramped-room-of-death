@@ -1,6 +1,6 @@
 import { _decorator, Component, Node } from 'cc'
 import levels, { ILevel } from '../../Level'
-import { DataManagerInstance } from '../../Runtime/Datamanager'
+import DataManager from '../../Runtime/Datamanager'
 import { createUINode } from '../../Util'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 const { ccclass } = _decorator
@@ -23,9 +23,9 @@ export class BattleManager extends Component {
             // 储存关卡等级
             this.level = level
             // 储存地图信息
-            DataManagerInstance.mapInfo = this.level.mapInfo
-            DataManagerInstance.mapRowCount = this.level.mapInfo.length || 0
-            DataManagerInstance.mapColumnCount = this.level.mapInfo[0].length || 0
+            DataManager.Instance.mapInfo = this.level.mapInfo
+            DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
+            DataManager.Instance.mapColumnCount = this.level.mapInfo[0].length || 0
             // 生成地图
             this.generateTileMap()
         }
@@ -50,7 +50,7 @@ export class BattleManager extends Component {
 
     //自适应调整地图位于屏幕中央
     adaptPos() {
-        const { mapColumnCount, mapRowCount } = DataManagerInstance
+        const { mapColumnCount, mapRowCount } = DataManager.Instance
         const disX = (TILE_WIDTH * mapRowCount) / 2
         const disY = (TILE_HEIGHT * mapColumnCount) / 2 + 80
         this.stage.setPosition(-disX, disY)

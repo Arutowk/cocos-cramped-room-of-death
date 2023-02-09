@@ -1,15 +1,16 @@
-import { _decorator, Component, Node, Sprite, resources, SpriteFrame, UITransform, Layers } from 'cc'
+import { _decorator, Component } from 'cc'
 const { ccclass } = _decorator
 
-import { DataManagerInstance } from '../../Runtime/Datamanager'
+import DataManager from '../../Runtime/Datamanager'
+import ResourceManager from '../../Runtime/ResourceManager'
 import { createUINode } from '../../Util'
 import { TileManager } from './TileManager'
 
 @ccclass('TileMapManager')
 export class TileMapManager extends Component {
     async init() {
-        const SpriteFrames = await this.loadRes()
-        const { mapInfo } = DataManagerInstance
+        const SpriteFrames = await ResourceManager.Instance.loadDir('texture/tile/tile')
+        const { mapInfo } = DataManager.Instance
         for (let i = 0; i < mapInfo.length; i++) {
             const column = mapInfo[i]
             for (let j = 0; j < column.length; j++) {
@@ -28,18 +29,5 @@ export class TileMapManager extends Component {
                 node.setParent(this.node)
             }
         }
-    }
-
-    loadRes() {
-        return new Promise<SpriteFrame[]>((resolve, reject) => {
-            // 加载 目标 目录下所有 SpriteFrame，并且获取它们的路径
-            resources.loadDir('texture/tile/tile', SpriteFrame, function (err, assets) {
-                if (err) {
-                    reject(err)
-                    return
-                }
-                resolve(assets)
-            })
-        })
     }
 }
