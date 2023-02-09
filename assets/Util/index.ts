@@ -1,6 +1,5 @@
 import { Layers, Node, UITransform } from 'cc'
 
-/* */
 export const createUINode = (name: string = '') => {
     //每张瓦片创造一个节点
     const node = new Node(name)
@@ -12,3 +11,5 @@ export const createUINode = (name: string = '') => {
     node.layer = 1 << Layers.nameToLayer('UI_2D')
     return node
 }
+
+export const randomByRange = (start: number, end: number) => Math.floor(start + (end - start) * Math.random())
