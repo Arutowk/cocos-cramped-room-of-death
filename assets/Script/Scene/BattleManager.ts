@@ -4,6 +4,7 @@ import levels, { ILevel } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
 import { createUINode } from '../../Util'
+import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 const { ccclass } = _decorator
 
@@ -42,6 +43,8 @@ export class BattleManager extends Component {
 
             // 生成地图
             this.generateTileMap()
+            // 生成玩家
+            this.generatePlayer()
         }
     }
 
@@ -71,6 +74,13 @@ export class BattleManager extends Component {
         tileManager.init()
 
         this.adaptPos()
+    }
+
+    generatePlayer() {
+        const player = createUINode()
+        player.setParent(this.stage)
+        const playerManager = player.addComponent(PlayerManager)
+        playerManager.init()
     }
 
     //自适应调整地图位于屏幕中央
