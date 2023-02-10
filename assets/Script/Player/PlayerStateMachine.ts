@@ -41,6 +41,7 @@ export class PlayerStateMachine extends StateMachine {
     initParams() {
         this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.TURNLEFT, getInitParamsTrigger())
+        this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
     }
 
     //注册可能有的所有状态

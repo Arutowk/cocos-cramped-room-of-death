@@ -50,6 +50,16 @@ export enum DIRECTION_ENUM {
 }
 
 /***
+ * 方向顺序
+ */
+export enum DIRECTION_ORDER_ENUM {
+    TOP = 0,
+    BOTTOM = 1,
+    LEFT = 2,
+    RIGHT = 3,
+}
+
+/***
  * 控制按钮枚举
  */
 export enum CONTROLLER_ENUM {
