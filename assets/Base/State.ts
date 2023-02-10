@@ -31,7 +31,7 @@ export default class State {
         track.channel.curve.assignSorted(frames)
         // 最后将轨道添加到动画剪辑以应用
         this.animationClip.addTrack(track)
-
+        this.animationClip.name = this.path
         this.animationClip.duration = frames.length * ANIMATION_SPEED //整个动画剪辑的周期
         this.animationClip.wrapMode = this.wrapMode
     }

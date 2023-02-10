@@ -54,6 +54,7 @@ export class PlayerStateMachine extends Component {
         if (this.params.has(paramsName)) {
             this.params.get(paramsName).value = value
             this.run()
+            this.resetTrigger()
         }
     }
 
@@ -62,6 +63,7 @@ export class PlayerStateMachine extends Component {
 
         this.initParams()
         this.initStateMachines()
+        this.initAnimationEvent()
 
         //等到所有资源加载完才退出init方法，保证状态在之后设置
         await Promise.all(this.waitingList)
@@ -79,6 +81,27 @@ export class PlayerStateMachine extends Component {
             new State(this, 'texture/player/idle/top', AnimationClip.WrapMode.Loop),
         )
         this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new State(this, 'texture/player/turnleft/top'))
+    }
+
+    initAnimationEvent() {
+        this.animationComponent.on(Animation.EventType.FINISHED, () => {
+            //播放完turn动画后回到IDLE状态
+            const name = this.animationComponent.defaultClip.name
+            const whiteList = ['turn']
+            if (whiteList.some(v => name.includes(v))) {
+                this.setParams(PARAMS_NAME_ENUM.IDLE, true)
+            }
+        })
+    }
+
+    //动画完毕后trigger的清空重置
+    //https://docs.cocos.com/creator/manual/zh/animation/marionette/animation-graph-panel.html
+    resetTrigger() {
+        for (const [_, item] of this.params) {
+            if (item.type === FSM_PARAM_TYPE_ENUM.TRIGGER) {
+                item.value = false
+            }
+        }
     }
 
     run() {
