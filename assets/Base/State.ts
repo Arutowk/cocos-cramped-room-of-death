@@ -1,6 +1,6 @@
 import { animation, AnimationClip, Sprite, SpriteFrame } from 'cc'
 import ResourceManager from '../Runtime/ResourceManager'
-import { PlayerStateMachine } from '../Script/Player/PlayerStateMachine'
+import { StateMachine } from './StateMachine'
 
 const ANIMATION_SPEED = 1 / 8
 
@@ -11,7 +11,7 @@ const ANIMATION_SPEED = 1 / 8
 export default class State {
     private animationClip: AnimationClip
     constructor(
-        private fsm: PlayerStateMachine,
+        private fsm: StateMachine,
         private path: string,
         private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
     ) {

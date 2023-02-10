@@ -1,7 +1,6 @@
-import { _decorator, Component, Animation, Sprite, UITransform, animation, AnimationClip, SpriteFrame } from 'cc'
+import { _decorator, Component, Sprite, UITransform } from 'cc'
 import { CONTROLLER_ENUM, EVENT_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import EventManager from '../../Runtime/EventManager'
-import ResourceManager from '../../Runtime/ResourceManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { PlayerStateMachine } from './PlayerStateMachine'
 const { ccclass, property } = _decorator
