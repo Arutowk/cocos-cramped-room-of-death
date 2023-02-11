@@ -7,6 +7,7 @@ import { createUINode } from '../../Util'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { TileMapManager } from '../Tile/TileMapManager'
+import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 
 const { ccclass } = _decorator
 
@@ -45,6 +46,8 @@ export class BattleManager extends Component {
             this.generateTileMap()
             // 生成玩家
             this.generatePlayer()
+            //生成敌人
+            this.generateEnemies()
         }
     }
 
@@ -81,6 +84,13 @@ export class BattleManager extends Component {
         player.setParent(this.stage)
         const playerManager = player.addComponent(PlayerManager)
         playerManager.init()
+    }
+
+    generateEnemies() {
+        const enemy = createUINode()
+        enemy.setParent(this.stage)
+        const enemyManager = enemy.addComponent(WoodenSkeletonManager)
+        enemyManager.init()
     }
 
     //自适应调整地图位于屏幕中央
