@@ -19,12 +19,14 @@ export enum TILE_TYPE_ENUM {
  */
 export enum EVENT_ENUM {
     NEXT_LEVEL = 'NEXT_LEVEL',
-    /* 移动转向操作 */
+    /**  移动转向操作 */
     PLAYER_CTRL = 'PLAYER_CTRL',
-    /* 玩家完成移动 */
+    /** 玩家完成移动 */
     PLAYER_MOVE_END = 'PLAYER_MOVE_END',
-    /* 玩家出生 */
+    /** 玩家出生 */
     PLAYER_BORN = 'PLAYER_BORN',
+    /** 玩家被攻击*/
+    ATTACK_PLAYER = 'ATTACK_PLAYER',
 }
 
 /***
@@ -102,7 +104,7 @@ export enum FSM_PARAM_TYPE_ENUM {
 }
 
 /***
- * 状态
+ * trigger参数列表名称
  */
 export enum PARAMS_NAME_ENUM {
     IDLE = 'IDLE',

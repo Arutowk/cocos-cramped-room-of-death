@@ -30,6 +30,7 @@ export class PlayerManager extends EntityManager {
         this.direction = DIRECTION_ENUM.TOP
 
         EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
+        EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
     }
 
     update() {
@@ -61,10 +62,14 @@ export class PlayerManager extends EntityManager {
         }
     }
 
+    onDead(type: ENTITY_STATE_ENUM) {
+        this.state = type
+    }
+
     inputHandle(inputDirection: CONTROLLER_ENUM) {
-        if (this.willBlock(inputDirection)) {
-            return
-        }
+        if (this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH) return
+        if (this.isMoving) return
+        if (this.willBlock(inputDirection)) return
         this.move(inputDirection)
     }
 

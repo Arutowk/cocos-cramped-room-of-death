@@ -8,6 +8,7 @@ import BlockLeftSubStateMachine from './BlockLeftSubStateMachine'
 import BlockRightSubStateMachine from './BlockRightSubStateMachine'
 import BlockTurnLeftSubStateMachine from './BlockTurnLeftSubStateMachine'
 import BlockTurnRightSubStateMachine from './BlockTurnRightSubStateMachine'
+import DeathSubStateMachine from './DeathSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 import TurnRightSubStateMachine from './TurnRightSubStateMachine'
@@ -48,6 +49,7 @@ export class PlayerStateMachine extends StateMachine {
         await Promise.all(this.waitingList)
     }
 
+    //挂载参数列表trigger
     initParams() {
         this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
@@ -59,6 +61,7 @@ export class PlayerStateMachine extends StateMachine {
         this.params.set(PARAMS_NAME_ENUM.BLOCKRIGHT, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.BLOCKTURNLEFT, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.BLOCKTURNRIGHT, getInitParamsTrigger())
+        this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
     }
 
     //注册可能有的所有状态
@@ -72,6 +75,7 @@ export class PlayerStateMachine extends StateMachine {
         this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKRIGHT, new BlockRightSubStateMachine(this))
         this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKTURNLEFT, new BlockTurnLeftSubStateMachine(this))
         this.stateMachines.set(PARAMS_NAME_ENUM.BLOCKTURNRIGHT, new BlockTurnRightSubStateMachine(this))
+        this.stateMachines.set(PARAMS_NAME_ENUM.DEATH, new DeathSubStateMachine(this))
     }
 
     initAnimationEvent() {
@@ -96,6 +100,7 @@ export class PlayerStateMachine extends StateMachine {
             case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKRIGHT):
             case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNLEFT):
             case this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNRIGHT):
+            case this.stateMachines.get(PARAMS_NAME_ENUM.DEATH):
                 if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
                 } else if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
@@ -114,6 +119,8 @@ export class PlayerStateMachine extends StateMachine {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNLEFT)
                 } else if (this.params.get(PARAMS_NAME_ENUM.BLOCKTURNRIGHT).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.BLOCKTURNRIGHT)
+                } else if (this.params.get(PARAMS_NAME_ENUM.DEATH).value) {
+                    this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.DEATH)
                 } else {
                     //保证触发currentState的set方法，才能触发子状态机的run方法
                     this.currentState = this.currentState
