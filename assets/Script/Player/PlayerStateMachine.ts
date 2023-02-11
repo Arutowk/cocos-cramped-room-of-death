@@ -3,6 +3,7 @@ import { StateMachine } from '../../Base/StateMachine'
 import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import IdleSubStateMachine from './IdleSubStateMachine'
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
+import TurnRightSubStateMachine from './TurnRightSubStateMachine'
 
 const { ccclass, property } = _decorator
 
@@ -43,6 +44,7 @@ export class PlayerStateMachine extends StateMachine {
     initParams() {
         this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.TURNLEFT, getInitParamsTrigger())
+        this.params.set(PARAMS_NAME_ENUM.TURNRIGHT, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
     }
 
@@ -50,6 +52,7 @@ export class PlayerStateMachine extends StateMachine {
     initStateMachines() {
         this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
         this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
+        this.stateMachines.set(PARAMS_NAME_ENUM.TURNRIGHT, new TurnRightSubStateMachine(this))
     }
 
     initAnimationEvent() {
@@ -66,9 +69,12 @@ export class PlayerStateMachine extends StateMachine {
     run() {
         switch (this.currentState) {
             case this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT):
+            case this.stateMachines.get(PARAMS_NAME_ENUM.TURNRIGHT):
             case this.stateMachines.get(PARAMS_NAME_ENUM.IDLE):
                 if (this.params.get(PARAMS_NAME_ENUM.TURNLEFT).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT)
+                } else if (this.params.get(PARAMS_NAME_ENUM.TURNRIGHT).value) {
+                    this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNRIGHT)
                 } else if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
                 } else {

@@ -1,16 +1,18 @@
 import { _decorator } from 'cc'
-import { EntityManager } from '@assets/Base/EntityManager'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '@assets/Enum'
-import EventManager from '@assets/Runtime/EventManager'
 import { PlayerStateMachine } from './PlayerStateMachine'
+import { TileManager } from '../Tile/TileManager'
+import { EntityManager } from '../../Base/EntityManager'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import EventManager from '../../Runtime/EventManager'
+import DataManager from '../../Runtime/Datamanager'
 
-const { ccclass, property } = _decorator
+const { ccclass } = _decorator
 
 @ccclass('PlayerManager')
 export class PlayerManager extends EntityManager {
     private readonly speed = 1 / 10
-    targetX: number = 0
-    targetY: number = 0
+    targetX: number = 2
+    targetY: number = 8
     isMoving = false
 
     async init() {
@@ -27,7 +29,7 @@ export class PlayerManager extends EntityManager {
         this.state = ENTITY_STATE_ENUM.IDLE
         this.direction = DIRECTION_ENUM.TOP
 
-        EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.move, this)
+        EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
     }
 
     update() {
@@ -59,6 +61,90 @@ export class PlayerManager extends EntityManager {
         }
     }
 
+    inputHandle(inputDirection: CONTROLLER_ENUM) {
+        if (this.willBlock(inputDirection)) {
+            return
+        }
+        this.move(inputDirection)
+    }
+
+    //判断是否碰撞
+    willBlock(inputDirection: CONTROLLER_ENUM): boolean {
+        const { targetX: x, targetY: y, direction } = this
+        const { tileInfo } = DataManager.Instance
+        let nowWeaPonX: number, nowWeaponY: number
+        switch (direction) {
+            case DIRECTION_ENUM.TOP:
+                nowWeaPonX = x
+                nowWeaponY = y - 1
+                break
+            case DIRECTION_ENUM.BOTTOM:
+                nowWeaPonX = x
+                nowWeaponY = y + 1
+                break
+            case DIRECTION_ENUM.LEFT:
+                nowWeaPonX = x - 1
+                nowWeaponY = y
+                break
+            case DIRECTION_ENUM.RIGHT:
+                nowWeaPonX = x + 1
+                nowWeaponY = y
+                break
+            default:
+                break
+        }
+        //操作后玩家假设在的位置和枪扫过的若干位置
+        let nextPlayerTile: TileManager | null,
+            nextWeaponTile: Array<TileManager | null> = []
+        switch (inputDirection) {
+            case CONTROLLER_ENUM.TOP:
+                nextPlayerTile = tileInfo?.[x]?.[y - 1] ?? null
+                nextWeaponTile = [tileInfo?.[nowWeaPonX]?.[nowWeaponY - 1] ?? null]
+                break
+            case CONTROLLER_ENUM.BOTTOM:
+                nextPlayerTile = tileInfo?.[x]?.[y + 1] ?? null
+                nextWeaponTile = [tileInfo?.[nowWeaPonX]?.[nowWeaponY + 1] ?? null]
+                break
+            case CONTROLLER_ENUM.LEFT:
+                nextPlayerTile = tileInfo?.[x - 1]?.[y] ?? null
+                nextWeaponTile = [tileInfo?.[nowWeaPonX - 1]?.[nowWeaponY] ?? null]
+                break
+            case CONTROLLER_ENUM.RIGHT:
+                nextPlayerTile = tileInfo?.[x + 1]?.[y] ?? null
+                nextWeaponTile = [tileInfo?.[nowWeaPonX + 1]?.[nowWeaponY] ?? null]
+                break
+            case CONTROLLER_ENUM.TURNLEFT:
+                nextPlayerTile = tileInfo?.[x]?.[y] ?? null
+                if (direction === DIRECTION_ENUM.TOP) {
+                    nextWeaponTile = [tileInfo?.[x - 1]?.[y - 1] ?? null, tileInfo?.[x - 1]?.[y] ?? null]
+                } else if (direction === DIRECTION_ENUM.BOTTOM) {
+                    nextWeaponTile = [tileInfo?.[x + 1]?.[y + 1] ?? null, tileInfo?.[x + 1]?.[y] ?? null]
+                } else if (direction === DIRECTION_ENUM.LEFT) {
+                    nextWeaponTile = [tileInfo?.[x - 1]?.[y + 1] ?? null, tileInfo?.[x]?.[y + 1] ?? null]
+                } else if (direction === DIRECTION_ENUM.RIGHT) {
+                    nextWeaponTile = [tileInfo?.[x + 1]?.[y - 1] ?? null, tileInfo?.[x]?.[y - 1] ?? null]
+                }
+                break
+            case CONTROLLER_ENUM.TURNRIGHT:
+                nextPlayerTile = tileInfo?.[x]?.[y] ?? null
+                if (direction === DIRECTION_ENUM.TOP) {
+                    nextWeaponTile = [tileInfo?.[x + 1]?.[y - 1] ?? null, tileInfo?.[x + 1]?.[y] ?? null]
+                } else if (direction === DIRECTION_ENUM.BOTTOM) {
+                    nextWeaponTile = [tileInfo?.[x - 1]?.[y + 1] ?? null, tileInfo?.[x - 1]?.[y] ?? null]
+                } else if (direction === DIRECTION_ENUM.LEFT) {
+                    nextWeaponTile = [tileInfo?.[x - 1]?.[y - 1] ?? null, tileInfo?.[x]?.[y - 1] ?? null]
+                } else if (direction === DIRECTION_ENUM.RIGHT) {
+                    nextWeaponTile = [tileInfo?.[x + 1]?.[y + 1] ?? null, tileInfo?.[x]?.[y + 1] ?? null]
+                }
+                break
+            default:
+                break
+        }
+        if (nextPlayerTile === null || nextPlayerTile?.moveable === false) return true
+        if (nextWeaponTile.some(tile => tile?.turnable === false)) return true
+        return false
+    }
+
     move(inputDirection: CONTROLLER_ENUM) {
         if (inputDirection === CONTROLLER_ENUM.TOP) {
             this.targetY -= 1
@@ -83,6 +169,17 @@ export class PlayerManager extends EntityManager {
                 this.direction = DIRECTION_ENUM.TOP
             }
             this.state = ENTITY_STATE_ENUM.TURNLEFT
+        } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+            if (this.direction === DIRECTION_ENUM.TOP) {
+                this.direction = DIRECTION_ENUM.RIGHT
+            } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
+                this.direction = DIRECTION_ENUM.LEFT
+            } else if (this.direction === DIRECTION_ENUM.LEFT) {
+                this.direction = DIRECTION_ENUM.TOP
+            } else if (this.direction === DIRECTION_ENUM.RIGHT) {
+                this.direction = DIRECTION_ENUM.BOTTOM
+            }
+            this.state = ENTITY_STATE_ENUM.TURNRIGHT
         }
     }
 }
