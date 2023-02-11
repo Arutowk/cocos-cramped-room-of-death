@@ -1,5 +1,6 @@
 import { animation, AnimationClip, Sprite, SpriteFrame } from 'cc'
 import ResourceManager from '../Runtime/ResourceManager'
+import { sortSpriteFrame } from '../Util'
 import StateMachine from './StateMachine'
 
 const ANIMATION_SPEED = 1 / 8
@@ -26,7 +27,11 @@ export default class State {
 
         const track = new animation.ObjectTrack() // 创建一个对象轨道
         track.path = new animation.TrackPath().toComponent(Sprite).toProperty('spriteFrame')
-        const frames: Array<[number, SpriteFrame]> = spriteFrames.map((item, index) => [ANIMATION_SPEED * index, item])
+        //请求资源的顺序可能是错的，需要对SpriteFrame进行排序
+        const frames: Array<[number, SpriteFrame]> = sortSpriteFrame(spriteFrames).map((item, index) => [
+            ANIMATION_SPEED * index,
+            item,
+        ])
         // 添加关键帧
         track.channel.curve.assignSorted(frames)
         // 最后将轨道添加到动画剪辑以应用

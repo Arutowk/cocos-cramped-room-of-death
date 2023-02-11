@@ -1,4 +1,4 @@
-import { Layers, Node, UITransform } from 'cc'
+import { Layers, Node, UITransform, SpriteFrame } from 'cc'
 
 export const createUINode = (name: string = '') => {
     //每张瓦片创造一个节点
@@ -13,3 +13,10 @@ export const createUINode = (name: string = '') => {
 }
 
 export const randomByRange = (start: number, end: number) => Math.floor(start + (end - start) * Math.random())
+
+const INDEX_REG = /\((\d+)\)/
+
+const getNumberWithinString = (str: string) => parseInt(str.match(INDEX_REG)?.[1] || '0')
+
+export const sortSpriteFrame = (spriteFrame: Array<SpriteFrame>) =>
+    spriteFrame.sort((a, b) => getNumberWithinString(a.name) - getNumberWithinString(b.name))
