@@ -1,5 +1,4 @@
-import { _decorator, Component, Animation, SpriteFrame } from 'cc'
-import { FSM_PARAM_TYPE_ENUM } from '../Enum'
+import { _decorator } from 'cc'
 import State from './State'
 import { StateMachine } from './StateMachine'
 

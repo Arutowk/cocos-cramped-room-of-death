@@ -1,8 +1,7 @@
-import { AnimationClip } from 'cc'
-import DirectionSubStateMachine from '../../Base/DirectionSubStateMachine'
-import State from '../../Base/State'
-import { StateMachine } from '../../Base/StateMachine'
-import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import DirectionSubStateMachine from '@assets/Base/DirectionSubStateMachine'
+import State from '@assets/Base/State'
+import { StateMachine } from '@assets/Base/StateMachine'
+import { DIRECTION_ENUM } from '@assets/Enum'
 
 const BASE_URL = 'texture/player/turnleft'
 

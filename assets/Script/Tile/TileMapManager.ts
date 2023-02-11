@@ -1,10 +1,10 @@
 import { _decorator, Component } from 'cc'
-const { ccclass } = _decorator
-
-import DataManager from '../../Runtime/Datamanager'
-import ResourceManager from '../../Runtime/ResourceManager'
-import { createUINode, randomByRange } from '../../Util'
+import DataManager from '@assets/Runtime/Datamanager'
+import ResourceManager from '@assets/Runtime/ResourceManager'
+import { createUINode, randomByRange } from '@assets/Util'
 import { TileManager } from './TileManager'
+
+const { ccclass } = _decorator
 
 @ccclass('TileMapManager')
 export class TileMapManager extends Component {

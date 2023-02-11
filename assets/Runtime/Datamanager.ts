@@ -1,5 +1,5 @@
-import { ITile } from 'db://assets/Level'
-import Singleton from '../Base/Singleton'
+import Singleton from '@assets/Base/Singleton'
+import { ITile } from '@assets/Level'
 
 export default class DataManager extends Singleton {
     static get Instance() {

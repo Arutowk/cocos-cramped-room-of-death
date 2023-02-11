@@ -1,9 +1,9 @@
-import { _decorator, Component, Node, Event, AnimationClip, Animation, SpriteFrame } from 'cc'
-import State from '../../Base/State'
-import { StateMachine } from '../../Base/StateMachine'
-import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import { _decorator, Animation } from 'cc'
+import { StateMachine } from '@assets/Base/StateMachine'
+import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '@assets/Enum'
 import IdleSubStateMachine from './IdleSubStateMachine'
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
+
 const { ccclass, property } = _decorator
 
 type ParamsValue = boolean | number

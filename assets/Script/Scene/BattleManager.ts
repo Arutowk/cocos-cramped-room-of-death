@@ -1,14 +1,14 @@
 import { _decorator, Component, Node } from 'cc'
-import { EVENT_ENUM } from '../../Enum'
-import levels, { ILevel } from '../../Level'
-import DataManager from '../../Runtime/Datamanager'
-import EventManager from '../../Runtime/EventManager'
-import { createUINode } from '../../Util'
+import { EVENT_ENUM } from '@assets/Enum'
+import levels, { ILevel } from '@assets/Level'
+import DataManager from '@assets/Runtime/Datamanager'
+import EventManager from '@assets/Runtime/EventManager'
+import { createUINode } from '@assets/Util'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
-const { ccclass } = _decorator
-
 import { TileMapManager } from '../Tile/TileMapManager'
+
+const { ccclass } = _decorator
 
 @ccclass('BattleManager')
 export class BattleManager extends Component {

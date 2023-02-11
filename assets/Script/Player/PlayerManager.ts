@@ -1,17 +1,9 @@
-import { _decorator, Component, Sprite, UITransform } from 'cc'
-import { EntityManager } from '../../Base/EntityManager'
-import {
-    CONTROLLER_ENUM,
-    DIRECTION_ENUM,
-    DIRECTION_ORDER_ENUM,
-    ENTITY_STATE_ENUM,
-    ENTITY_TYPE_ENUM,
-    EVENT_ENUM,
-    PARAMS_NAME_ENUM,
-} from '../../Enum'
-import EventManager from '../../Runtime/EventManager'
-import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
+import { _decorator } from 'cc'
+import { EntityManager } from '@assets/Base/EntityManager'
+import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '@assets/Enum'
+import EventManager from '@assets/Runtime/EventManager'
 import { PlayerStateMachine } from './PlayerStateMachine'
+
 const { ccclass, property } = _decorator
 
 @ccclass('PlayerManager')
