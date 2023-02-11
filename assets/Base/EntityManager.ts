@@ -1,8 +1,10 @@
+import { _decorator, Component, Sprite, UITransform } from 'cc'
+
 import { PlayerStateMachine } from '@assets/Script/Player/PlayerStateMachine'
 import { TILE_HEIGHT, TILE_WIDTH } from '@assets/Script/Tile/TileManager'
-import { _decorator, Component, Sprite, UITransform } from 'cc'
-import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
+import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
 import { IEntity } from '../Level'
+
 const { ccclass } = _decorator
 
 @ccclass('EntityManager')
@@ -13,6 +15,7 @@ export class EntityManager extends Component {
 
     private _direction: DIRECTION_ENUM
     private _state: ENTITY_STATE_ENUM
+    private type: ENTITY_TYPE_ENUM
 
     get direction() {
         return this._direction
@@ -43,6 +46,7 @@ export class EntityManager extends Component {
         this.y = params.y
         this.direction = params.direction
         this.state = params.state
+        this.type = params.type
     }
 
     update() {
