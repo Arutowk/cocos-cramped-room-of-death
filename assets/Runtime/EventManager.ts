@@ -1,4 +1,4 @@
-import Singleton from '@assets/Base/Singleton'
+import Singleton from '../Base/Singleton'
 
 interface IItem {
     func: Function

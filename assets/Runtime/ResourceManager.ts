@@ -1,5 +1,5 @@
 import { resources, SpriteFrame } from 'cc'
-import Singleton from '@assets/Base/Singleton'
+import Singleton from '../Base/Singleton'
 
 export default class ResourceManager extends Singleton {
     static get Instance() {

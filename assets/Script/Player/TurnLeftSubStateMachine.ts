@@ -1,7 +1,7 @@
-import DirectionSubStateMachine from '@assets/Base/DirectionSubStateMachine'
-import State from '@assets/Base/State'
-import { StateMachine } from '@assets/Base/StateMachine'
-import { DIRECTION_ENUM } from '@assets/Enum'
+import DirectionSubStateMachine from '../../Base/DirectionSubStateMachine'
+import State from '../../Base/State'
+import { StateMachine } from '../../Base/StateMachine'
+import { DIRECTION_ENUM } from '../../Enum'
 
 const BASE_URL = 'texture/player/turnleft'
 

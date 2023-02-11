@@ -1,6 +1,6 @@
-import Singleton from '@assets/Base/Singleton'
-import { ITile } from '@assets/Level'
-import { TileManager } from '@assets/Script/Tile/TileManager'
+import Singleton from '../Base/Singleton'
+import { ITile } from '../Level'
+import { TileManager } from '../Script/Tile/TileManager'
 
 export default class DataManager extends Singleton {
     static get Instance() {

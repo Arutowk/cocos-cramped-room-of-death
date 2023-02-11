@@ -1,6 +1,5 @@
 import { _decorator, Component, Sprite, SpriteFrame, UITransform } from 'cc'
-
-import { TILE_TYPE_ENUM } from '@assets/Enum'
+import { TILE_TYPE_ENUM } from '../../Enum'
 
 const { ccclass } = _decorator
 

@@ -4,10 +4,6 @@
 
     /* Add your custom configuration here. */
     "compilerOptions": {
-        "strict": false,
-        "baseUrl": "./",
-        "paths": {
-            "@assets/*": ["./assets/*"] // 配置别名
-        }
+        "strict": false
     }
 }

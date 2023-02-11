@@ -1,9 +1,9 @@
 import { _decorator, Component, Sprite, UITransform } from 'cc'
 
-import { PlayerStateMachine } from '@assets/Script/Player/PlayerStateMachine'
-import { TILE_HEIGHT, TILE_WIDTH } from '@assets/Script/Tile/TileManager'
 import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
 import { IEntity } from '../Level'
+import { PlayerStateMachine } from '../Script/Player/PlayerStateMachine'
+import { TILE_HEIGHT, TILE_WIDTH } from '../Script/Tile/TileManager'
 
 const { ccclass } = _decorator
 

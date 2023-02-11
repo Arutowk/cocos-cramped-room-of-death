@@ -1,6 +1,6 @@
 import { _decorator, Animation } from 'cc'
-import { StateMachine } from '@assets/Base/StateMachine'
-import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '@assets/Enum'
+import { StateMachine } from '../../Base/StateMachine'
+import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import IdleSubStateMachine from './IdleSubStateMachine'
 import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 

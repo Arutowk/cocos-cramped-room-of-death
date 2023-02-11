@@ -1,5 +1,5 @@
 import { animation, AnimationClip, Sprite, SpriteFrame } from 'cc'
-import ResourceManager from '@assets/Runtime/ResourceManager'
+import ResourceManager from '../Runtime/ResourceManager'
 import { StateMachine } from './StateMachine'
 
 const ANIMATION_SPEED = 1 / 8
