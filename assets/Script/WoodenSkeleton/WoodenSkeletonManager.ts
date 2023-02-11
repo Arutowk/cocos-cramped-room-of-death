@@ -15,14 +15,30 @@ export class WoodenSkeletonManager extends EntityManager {
         await this.fsm.init()
         //退出init方法后才执行状态变化
         super.init({
-            x: 7,
-            y: 7,
+            x: 2,
+            y: 4,
             type: ENTITY_TYPE_ENUM.SKELETON_WOODEN,
             direction: DIRECTION_ENUM.TOP,
             state: ENTITY_STATE_ENUM.IDLE,
         })
         EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
         EventManager.Instance.on(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection, this)
+        EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack, this)
+        //保证无论敌人还是玩家先生成，敌人都能朝向玩家
+        this.onChangeDirection(true)
+    }
+
+    onAttack() {
+        const { x: playerX, y: playerY } = DataManager.Instance.player
+        if (
+            //玩家在敌人周围4格时
+            (playerX === this.x && Math.abs(playerY - this.y) <= 1) ||
+            (playerY === this.y && Math.abs(playerX - this.x) <= 1)
+        ) {
+            this.state = ENTITY_STATE_ENUM.ATTACK
+        } else {
+            this.state = ENTITY_STATE_ENUM.IDLE
+        }
     }
 
     /***

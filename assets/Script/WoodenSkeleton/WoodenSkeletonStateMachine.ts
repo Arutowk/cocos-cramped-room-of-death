@@ -2,6 +2,7 @@ import { _decorator, Animation } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
 import StateMachine from '../../Base/StateMachine'
 import { ENTITY_STATE_ENUM, FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import AttackSubStateMachine from './AttackSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 
 const { ccclass, property } = _decorator
@@ -43,29 +44,34 @@ export class WoodenSkeletonStateMachine extends StateMachine {
     initParams() {
         this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
+        this.params.set(PARAMS_NAME_ENUM.ATTACK, getInitParamsTrigger())
     }
 
     //注册可能有的所有状态
     initStateMachines() {
         this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
+        this.stateMachines.set(PARAMS_NAME_ENUM.ATTACK, new AttackSubStateMachine(this))
     }
 
     initAnimationEvent() {
         this.animationComponent.on(Animation.EventType.FINISHED, () => {
-            //播放完turn动画后回到IDLE状态
-            // const name = this.animationComponent.defaultClip.name
-            // const whiteList = ['turn', 'block']
-            // if (whiteList.some(v => name.includes(v))) {
-            //     this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.IDLE
-            // }
+            //播放完动画后回到IDLE状态
+            const name = this.animationComponent.defaultClip.name
+            const whiteList = ['attack']
+            if (whiteList.some(v => name.includes(v))) {
+                this.node.getComponent(EntityManager).state = ENTITY_STATE_ENUM.IDLE
+            }
         })
     }
 
     run() {
         switch (this.currentState) {
             case this.stateMachines.get(PARAMS_NAME_ENUM.IDLE):
+            case this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK):
                 if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
+                } else if (this.params.get(PARAMS_NAME_ENUM.ATTACK).value) {
+                    this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK)
                 } else {
                     //保证触发currentState的set方法，才能触发子状态机的run方法
                     this.currentState = this.currentState
