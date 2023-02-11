@@ -54,6 +54,7 @@ export class PlayerManager extends Component {
         await this.fsm.init()
         //退出init方法后才执行状态变化
         this.state = ENTITY_STATE_ENUM.IDLE
+        this.direction = DIRECTION_ENUM.TOP
 
         EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.move, this)
     }

@@ -1,6 +1,7 @@
 import { _decorator, Component, Animation, SpriteFrame } from 'cc'
 import { FSM_PARAM_TYPE_ENUM } from '../Enum'
 import State from './State'
+import { SubStateMachine } from './SubStateMachine'
 const { ccclass, property } = _decorator
 
 type ParamsValue = boolean | number
@@ -27,9 +28,9 @@ export const getInitParamsNumber = () => {
 @ccclass('StateMachine')
 export abstract class StateMachine extends Component {
     //参数列表和状态机列表，根据当前状态和参数列表决定下一个状态
-    private _currentState: State = null
+    private _currentState: State | SubStateMachine = null
     params: Map<string, IParamsValue> = new Map()
-    stateMachines: Map<string, State> = new Map()
+    stateMachines: Map<string, State | SubStateMachine> = new Map()
     animationComponent: Animation
     waitingList: Array<Promise<SpriteFrame[]>> = []
 

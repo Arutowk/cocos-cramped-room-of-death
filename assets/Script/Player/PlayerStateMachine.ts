@@ -2,6 +2,8 @@ import { _decorator, Component, Node, Event, AnimationClip, Animation, SpriteFra
 import State from '../../Base/State'
 import { StateMachine } from '../../Base/StateMachine'
 import { FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import IdleSubStateMachine from './IdleSubStateMachine'
+import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 const { ccclass, property } = _decorator
 
 type ParamsValue = boolean | number
@@ -46,11 +48,8 @@ export class PlayerStateMachine extends StateMachine {
 
     //注册可能有的所有状态
     initStateMachines() {
-        this.stateMachines.set(
-            PARAMS_NAME_ENUM.IDLE,
-            new State(this, 'texture/player/idle/top', AnimationClip.WrapMode.Loop),
-        )
-        this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new State(this, 'texture/player/turnleft/top'))
+        this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
+        this.stateMachines.set(PARAMS_NAME_ENUM.TURNLEFT, new TurnLeftSubStateMachine(this))
     }
 
     initAnimationEvent() {
@@ -72,6 +71,9 @@ export class PlayerStateMachine extends StateMachine {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.TURNLEFT)
                 } else if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
+                } else {
+                    //保证触发currentState的set方法，才能触发子状态机的run方法
+                    this.currentState = this.currentState
                 }
                 break
             default:
