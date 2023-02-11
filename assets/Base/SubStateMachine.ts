@@ -1,6 +1,6 @@
 import { _decorator } from 'cc'
 import State from './State'
-import { StateMachine } from './StateMachine'
+import StateMachine from './StateMachine'
 
 export abstract class SubStateMachine {
     //参数列表和状态机列表，根据当前状态和参数列表决定下一个状态

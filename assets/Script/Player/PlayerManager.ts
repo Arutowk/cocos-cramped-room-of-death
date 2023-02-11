@@ -140,8 +140,35 @@ export class PlayerManager extends EntityManager {
             default:
                 break
         }
-        if (nextPlayerTile === null || nextPlayerTile?.moveable === false) return true
-        if (nextWeaponTile.some(tile => tile?.turnable === false)) return true
+        if (
+            nextPlayerTile === null ||
+            nextPlayerTile?.moveable === false ||
+            nextWeaponTile.some(tile => tile?.turnable === false)
+        ) {
+            switch (inputDirection) {
+                case CONTROLLER_ENUM.TOP:
+                    this.state = ENTITY_STATE_ENUM.BLOCKFRONT
+                    break
+                case CONTROLLER_ENUM.BOTTOM:
+                    this.state = ENTITY_STATE_ENUM.BLOCKBACK
+                    break
+                case CONTROLLER_ENUM.LEFT:
+                    this.state = ENTITY_STATE_ENUM.BLOCKLEFT
+                    break
+                case CONTROLLER_ENUM.RIGHT:
+                    this.state = ENTITY_STATE_ENUM.BLOCKRIGHT
+                    break
+                case CONTROLLER_ENUM.TURNLEFT:
+                    this.state = ENTITY_STATE_ENUM.BLOCKTURNLEFT
+                    break
+                case CONTROLLER_ENUM.TURNRIGHT:
+                    this.state = ENTITY_STATE_ENUM.BLOCKTURNRIGHT
+                    break
+                default:
+                    break
+            }
+            return true
+        }
         return false
     }
 

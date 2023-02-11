@@ -26,7 +26,7 @@ export const getInitParamsNumber = () => {
 }
 
 @ccclass('StateMachine')
-export abstract class StateMachine extends Component {
+export default abstract class StateMachine extends Component {
     //参数列表和状态机列表，根据当前状态和参数列表决定下一个状态
     private _currentState: State | SubStateMachine = null
     params: Map<string, IParamsValue> = new Map()

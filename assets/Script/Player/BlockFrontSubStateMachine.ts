@@ -3,9 +3,9 @@ import State from '../../Base/State'
 import StateMachine from '../../Base/StateMachine'
 import { DIRECTION_ENUM } from '../../Enum'
 
-const BASE_URL = 'texture/player/turnright'
+const BASE_URL = 'texture/player/blockfront'
 
-export default class TurnRightSubStateMachine extends DirectionSubStateMachine {
+export default class BlockFrontSubStateMachine extends DirectionSubStateMachine {
     constructor(fsm: StateMachine) {
         super(fsm)
         this.stateMachines.set(DIRECTION_ENUM.TOP, new State(fsm, `${BASE_URL}/top`))
