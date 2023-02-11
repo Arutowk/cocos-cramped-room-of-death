@@ -9,8 +9,8 @@ const { ccclass } = _decorator
 
 @ccclass('EntityManager')
 export class EntityManager extends Component {
-    x: number = 0
-    y: number = 0
+    x: number
+    y: number
     fsm: PlayerStateMachine
 
     private _direction: DIRECTION_ENUM
@@ -36,7 +36,7 @@ export class EntityManager extends Component {
         this.fsm.setParams(newState, true)
     }
 
-    async init(params: IEntity) {
+    init(params: IEntity) {
         const sprite = this.addComponent(Sprite)
         sprite.sizeMode = Sprite.SizeMode.CUSTOM
         const transform = this.getComponent(UITransform)

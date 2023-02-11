@@ -68,6 +68,9 @@ export default abstract class StateMachine extends Component {
         }
     }
 
+    /***
+     * 由子类重写，方法目标是根据当前状态和参数修改currentState
+     */
     abstract init(): void
     abstract run(): void
 }

@@ -19,8 +19,12 @@ export enum TILE_TYPE_ENUM {
  */
 export enum EVENT_ENUM {
     NEXT_LEVEL = 'NEXT_LEVEL',
+    /* 移动转向操作 */
     PLAYER_CTRL = 'PLAYER_CTRL',
+    /* 玩家完成移动 */
     PLAYER_MOVE_END = 'PLAYER_MOVE_END',
+    /* 玩家出生 */
+    PLAYER_BORN = 'PLAYER_BORN',
 }
 
 /***

@@ -20,8 +20,8 @@ export class PlayerManager extends EntityManager {
         await this.fsm.init()
         //退出init方法后才执行状态变化
         super.init({
-            x: 0,
-            y: 0,
+            x: 2,
+            y: 8,
             type: ENTITY_TYPE_ENUM.PLAYER,
             direction: DIRECTION_ENUM.TOP,
             state: ENTITY_STATE_ENUM.IDLE,
@@ -195,6 +195,7 @@ export class PlayerManager extends EntityManager {
             } else if (this.direction === DIRECTION_ENUM.RIGHT) {
                 this.direction = DIRECTION_ENUM.TOP
             }
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
             this.state = ENTITY_STATE_ENUM.TURNLEFT
         } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
             if (this.direction === DIRECTION_ENUM.TOP) {
@@ -206,6 +207,7 @@ export class PlayerManager extends EntityManager {
             } else if (this.direction === DIRECTION_ENUM.RIGHT) {
                 this.direction = DIRECTION_ENUM.BOTTOM
             }
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
             this.state = ENTITY_STATE_ENUM.TURNRIGHT
         }
     }

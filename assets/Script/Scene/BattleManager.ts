@@ -68,10 +68,10 @@ export class BattleManager extends Component {
         this.stage.setParent(this.node)
     }
 
-    generateTileMap() {
+    async generateTileMap() {
         //创建瓦片地图
         const tileMap = createUINode()
-        tileMap.setParent(this.stage)
+        await tileMap.setParent(this.stage)
 
         const tileManager = tileMap.addComponent(TileMapManager)
         tileManager.init()
@@ -79,18 +79,21 @@ export class BattleManager extends Component {
         this.adaptPos()
     }
 
-    generatePlayer() {
+    async generatePlayer() {
         const player = createUINode()
         player.setParent(this.stage)
         const playerManager = player.addComponent(PlayerManager)
-        playerManager.init()
+        await playerManager.init()
+        DataManager.Instance.player = playerManager
+        EventManager.Instance.emit(EVENT_ENUM.PLAYER_BORN)
     }
 
-    generateEnemies() {
+    async generateEnemies() {
         const enemy = createUINode()
         enemy.setParent(this.stage)
         const enemyManager = enemy.addComponent(WoodenSkeletonManager)
-        enemyManager.init()
+        await enemyManager.init()
+        DataManager.Instance.enemies.push(enemyManager)
     }
 
     //自适应调整地图位于屏幕中央
