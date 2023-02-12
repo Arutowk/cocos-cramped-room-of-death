@@ -1,7 +1,15 @@
 import { _decorator, Component, Sprite, UITransform } from 'cc'
 import StateMachine from '../../Base/StateMachine'
-import { ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM, SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM } from '../../Enum'
+import {
+    ENTITY_STATE_ENUM,
+    ENTITY_TYPE_ENUM,
+    EVENT_ENUM,
+    PARAMS_NAME_ENUM,
+    SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM,
+} from '../../Enum'
 import { ISpikes } from '../../Level'
+import DataManager from '../../Runtime/Datamanager'
+import EventManager from '../../Runtime/EventManager'
 import { randomByLen } from '../../Util'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { SpikesStateMachine } from './SpikesStateMachine'
@@ -51,11 +59,36 @@ export class SpikesManager extends Component {
         this.type = params.type
         this.totalCount = SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM[this.type]
         this.count = params.count
+
+        EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onLoop, this)
+    }
+
+    onLoop() {
+        //达到最大值会在动画回调置0，当最大值时还没归零但人又触发移动，就让他变成1就好了
+        if (this.count === this.totalCount) {
+            this.count = 1
+        } else {
+            this.count++
+        }
+        this.onAttack()
+    }
+
+    onAttack() {
+        const { x: playerX, y: playerY } = DataManager.Instance.player
+        if (playerX === this.x && playerY === this.y && this.count === this.totalCount) {
+            EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.DEATH)
+        }
+    }
+
+    backZero() {
+        this.count = 0
     }
 
     update() {
         this.node.setPosition(this.x * TILE_WIDTH - 1.5 * TILE_WIDTH, 1.5 * TILE_HEIGHT - this.y * TILE_HEIGHT)
     }
 
-    onDestroy() {}
+    onDestroy() {
+        EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onLoop)
+    }
 }
