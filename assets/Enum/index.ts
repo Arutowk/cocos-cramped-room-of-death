@@ -127,3 +127,37 @@ export enum PARAMS_NAME_ENUM {
     SPIKES_TOTAL_COUNT = 'SPIKES_TOTAL_COUNT',
     SPIKES_CUR_COUNT = 'SPIKES_CUR_COUNT',
 }
+
+/***
+ * 尖刺类型和总点数映射
+ */
+export enum SPIKES_TYPE_MAP_TOTAL_COUNT_ENUM {
+    SPIKES_ONE = 2,
+    SPIKES_TWO = 3,
+    SPIKES_THREE = 4,
+    SPIKES_FOUR = 5,
+}
+
+/***
+ * 尖刺当前点数枚举
+ */
+export enum SPIKES_COUNT_ENUM {
+    ZERO = 'ZERO',
+    ONE = 'ONE',
+    TWO = 'TWO',
+    THREE = 'THREE',
+    FOUR = 'FOUR',
+    FIVE = 'FIVE',
+}
+
+/***
+ * 尖刺点数类型和数字映射
+ */
+export enum SPIKES_COUNT_MAP_NUMBER_ENUM {
+    ZERO = 0,
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5,
+}

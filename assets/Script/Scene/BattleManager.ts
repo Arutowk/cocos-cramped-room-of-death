@@ -8,6 +8,7 @@ import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { TileMapManager } from '../Tile/TileMapManager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
@@ -47,12 +48,14 @@ export class BattleManager extends Component {
 
             // 生成地图
             this.generateTileMap()
-            // //生成敌人
+            //生成敌人
             // this.generateEnemies()
             //生成门
             this.generateDoor()
             //生成砖片
-            this.generateBurst()
+            // this.generateBurst()
+            //生成地刺
+            this.generateSpikes()
             // 生成玩家
             this.generatePlayer()
         }
@@ -153,6 +156,19 @@ export class BattleManager extends Component {
             state: ENTITY_STATE_ENUM.IDLE,
         })
         DataManager.Instance.bursts.push(burstManager)
+    }
+
+    async generateSpikes() {
+        const spikes = createUINode()
+        spikes.setParent(this.stage)
+        const spikesManager = spikes.addComponent(SpikesManager)
+        await spikesManager.init({
+            x: 2,
+            y: 6,
+            type: ENTITY_TYPE_ENUM.SPIKES_FOUR,
+            count: 0,
+        })
+        DataManager.Instance.spikes.push(spikesManager)
     }
 
     //自适应调整地图位于屏幕中央
