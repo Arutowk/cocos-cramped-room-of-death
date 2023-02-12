@@ -5,6 +5,7 @@ import { EntityManager } from '../../Base/EntityManager'
 import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import EventManager from '../../Runtime/EventManager'
 import DataManager from '../../Runtime/Datamanager'
+import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 
 const { ccclass } = _decorator
 
@@ -67,10 +68,100 @@ export class PlayerManager extends EntityManager {
     }
 
     inputHandle(inputDirection: CONTROLLER_ENUM) {
-        if (this.state === ENTITY_STATE_ENUM.DEATH || this.state === ENTITY_STATE_ENUM.AIRDEATH) return
         if (this.isMoving) return
+        if (
+            this.state === ENTITY_STATE_ENUM.DEATH ||
+            this.state === ENTITY_STATE_ENUM.AIRDEATH ||
+            this.state === ENTITY_STATE_ENUM.ATTACK
+        )
+            return
+        if (this.willAttack(inputDirection)) return
         if (this.willBlock(inputDirection)) return
         this.move(inputDirection)
+    }
+
+    move(inputDirection: CONTROLLER_ENUM) {
+        if (inputDirection === CONTROLLER_ENUM.TOP) {
+            this.targetY -= 1
+            this.isMoving = true
+        } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
+            this.targetY += 1
+            this.isMoving = true
+        } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
+            this.targetX -= 1
+            this.isMoving = true
+        } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
+            this.targetX += 1
+            this.isMoving = true
+        } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
+            if (this.direction === DIRECTION_ENUM.TOP) {
+                this.direction = DIRECTION_ENUM.LEFT
+            } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
+                this.direction = DIRECTION_ENUM.RIGHT
+            } else if (this.direction === DIRECTION_ENUM.LEFT) {
+                this.direction = DIRECTION_ENUM.BOTTOM
+            } else if (this.direction === DIRECTION_ENUM.RIGHT) {
+                this.direction = DIRECTION_ENUM.TOP
+            }
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
+            this.state = ENTITY_STATE_ENUM.TURNLEFT
+        } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+            if (this.direction === DIRECTION_ENUM.TOP) {
+                this.direction = DIRECTION_ENUM.RIGHT
+            } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
+                this.direction = DIRECTION_ENUM.LEFT
+            } else if (this.direction === DIRECTION_ENUM.LEFT) {
+                this.direction = DIRECTION_ENUM.TOP
+            } else if (this.direction === DIRECTION_ENUM.RIGHT) {
+                this.direction = DIRECTION_ENUM.BOTTOM
+            }
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
+            this.state = ENTITY_STATE_ENUM.TURNRIGHT
+        }
+    }
+
+    //判断将要攻击
+    willAttack(inputDirection: CONTROLLER_ENUM): boolean {
+        const enemies = DataManager.Instance.enemies.filter(
+            (enemy: WoodenSkeletonManager) => enemy.state !== ENTITY_STATE_ENUM.DEATH,
+        )
+        for (let i = 0; i < enemies.length; i++) {
+            const { x: enemyX, y: enemyY } = enemies[i]
+            if (
+                inputDirection === CONTROLLER_ENUM.TOP &&
+                this.direction === DIRECTION_ENUM.TOP &&
+                enemyY === this.targetY - 2 &&
+                enemyX === this.x
+            ) {
+                this.state = ENTITY_STATE_ENUM.ATTACK
+                return true
+            } else if (
+                inputDirection === CONTROLLER_ENUM.BOTTOM &&
+                this.direction === DIRECTION_ENUM.BOTTOM &&
+                enemyY === this.targetY + 2 &&
+                enemyX === this.x
+            ) {
+                this.state = ENTITY_STATE_ENUM.ATTACK
+                return true
+            } else if (
+                inputDirection === CONTROLLER_ENUM.LEFT &&
+                this.direction === DIRECTION_ENUM.LEFT &&
+                enemyX === this.targetX - 2 &&
+                enemyY === this.y
+            ) {
+                this.state = ENTITY_STATE_ENUM.ATTACK
+                return true
+            } else if (
+                inputDirection === CONTROLLER_ENUM.RIGHT &&
+                this.direction === DIRECTION_ENUM.RIGHT &&
+                enemyX === this.targetX + 2 &&
+                enemyY === this.y
+            ) {
+                this.state = ENTITY_STATE_ENUM.ATTACK
+                return true
+            }
+        }
+        return false
     }
 
     //判断是否碰撞
@@ -175,45 +266,5 @@ export class PlayerManager extends EntityManager {
             return true
         }
         return false
-    }
-
-    move(inputDirection: CONTROLLER_ENUM) {
-        if (inputDirection === CONTROLLER_ENUM.TOP) {
-            this.targetY -= 1
-            this.isMoving = true
-        } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
-            this.targetY += 1
-            this.isMoving = true
-        } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
-            this.targetX -= 1
-            this.isMoving = true
-        } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
-            this.targetX += 1
-            this.isMoving = true
-        } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
-            if (this.direction === DIRECTION_ENUM.TOP) {
-                this.direction = DIRECTION_ENUM.LEFT
-            } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
-                this.direction = DIRECTION_ENUM.RIGHT
-            } else if (this.direction === DIRECTION_ENUM.LEFT) {
-                this.direction = DIRECTION_ENUM.BOTTOM
-            } else if (this.direction === DIRECTION_ENUM.RIGHT) {
-                this.direction = DIRECTION_ENUM.TOP
-            }
-            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
-            this.state = ENTITY_STATE_ENUM.TURNLEFT
-        } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
-            if (this.direction === DIRECTION_ENUM.TOP) {
-                this.direction = DIRECTION_ENUM.RIGHT
-            } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
-                this.direction = DIRECTION_ENUM.LEFT
-            } else if (this.direction === DIRECTION_ENUM.LEFT) {
-                this.direction = DIRECTION_ENUM.TOP
-            } else if (this.direction === DIRECTION_ENUM.RIGHT) {
-                this.direction = DIRECTION_ENUM.BOTTOM
-            }
-            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
-            this.state = ENTITY_STATE_ENUM.TURNRIGHT
-        }
     }
 }

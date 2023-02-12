@@ -42,6 +42,10 @@ export default class State {
     }
 
     run() {
+        //如果当前的状态就是将要播放动画的状态，就不重新播放了
+        if (this.fsm.animationComponent?.defaultClip?.name === this.animationClip.name) {
+            return
+        }
         this.fsm.animationComponent.defaultClip = this.animationClip
         this.fsm.animationComponent.play()
     }
