@@ -105,8 +105,8 @@ export class PlayerManager extends EntityManager {
             } else if (this.direction === DIRECTION_ENUM.RIGHT) {
                 this.direction = DIRECTION_ENUM.TOP
             }
-            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
             this.state = ENTITY_STATE_ENUM.TURNLEFT
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
         } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
             if (this.direction === DIRECTION_ENUM.TOP) {
                 this.direction = DIRECTION_ENUM.RIGHT
@@ -117,8 +117,8 @@ export class PlayerManager extends EntityManager {
             } else if (this.direction === DIRECTION_ENUM.RIGHT) {
                 this.direction = DIRECTION_ENUM.BOTTOM
             }
-            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
             this.state = ENTITY_STATE_ENUM.TURNRIGHT
+            EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
         }
     }
 
@@ -172,6 +172,8 @@ export class PlayerManager extends EntityManager {
         const { tileInfo } = DataManager.Instance
         const { x: doorX, y: doorY, state: doorState } = DataManager.Instance.door
         const enemies = DataManager.Instance.enemies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
+        //能踩的地裂陷阱
+        const bursts = DataManager.Instance.bursts.filter(burst => burst.state !== ENTITY_STATE_ENUM.DEATH)
 
         let nowWeaPonX: number, nowWeaponY: number
         switch (direction) {
@@ -286,7 +288,7 @@ export class PlayerManager extends EntityManager {
                 break
         }
         if (
-            nextPlayerTile === null || //人物遇到悬崖
+            (nextPlayerTile === null && bursts.every(burst => burst.x !== nextPlayerX && burst.y !== nextPlayerY)) || //人物遇到没有砖片的悬崖
             nextPlayerTile?.moveable === false || //人物撞墙
             nextWeaponTile.some(tile => tile?.turnable === false) || //枪撞墙
             (nextPlayerX === doorX && nextPlayerY === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //人物撞到门

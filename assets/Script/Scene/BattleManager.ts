@@ -4,6 +4,7 @@ import levels, { ILevel } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
 import { createUINode } from '../../Util'
+import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
@@ -46,12 +47,14 @@ export class BattleManager extends Component {
 
             // 生成地图
             this.generateTileMap()
-            // 生成玩家
-            this.generatePlayer()
-            //生成敌人
-            this.generateEnemies()
+            // //生成敌人
+            // this.generateEnemies()
             //生成门
             this.generateDoor()
+            //生成砖片
+            this.generateBurst()
+            // 生成玩家
+            this.generatePlayer()
         }
     }
 
@@ -128,8 +131,28 @@ export class BattleManager extends Component {
         const door = createUINode()
         door.setParent(this.stage)
         const doorManager = door.addComponent(DoorManager)
-        await doorManager.init()
+        await doorManager.init({
+            x: 7,
+            y: 8,
+            type: ENTITY_TYPE_ENUM.DOOR,
+            direction: DIRECTION_ENUM.TOP,
+            state: ENTITY_STATE_ENUM.IDLE,
+        })
         DataManager.Instance.door = doorManager
+    }
+
+    async generateBurst() {
+        const burst = createUINode()
+        burst.setParent(this.stage)
+        const burstManager = burst.addComponent(BurstManager)
+        await burstManager.init({
+            x: 2,
+            y: 6,
+            type: ENTITY_TYPE_ENUM.BURST,
+            direction: DIRECTION_ENUM.TOP,
+            state: ENTITY_STATE_ENUM.IDLE,
+        })
+        DataManager.Instance.bursts.push(burstManager)
     }
 
     //自适应调整地图位于屏幕中央
