@@ -6,29 +6,25 @@ import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, E
 import EventManager from '../../Runtime/EventManager'
 import DataManager from '../../Runtime/Datamanager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
+import { IEntity } from '../../Level'
 
 const { ccclass } = _decorator
 
 @ccclass('PlayerManager')
 export class PlayerManager extends EntityManager {
-    private readonly speed = 1 / 10
-    targetX: number = 2
-    targetY: number = 8
+    targetX: number
+    targetY: number
     isMoving = false
 
-    async init() {
+    private readonly speed = 1 / 10
+
+    async init(params: IEntity) {
         this.fsm = this.addComponent(PlayerStateMachine)
         await this.fsm.init()
         //退出init方法后才执行状态变化
-        super.init({
-            x: 2,
-            y: 8,
-            type: ENTITY_TYPE_ENUM.PLAYER,
-            direction: DIRECTION_ENUM.TOP,
-            state: ENTITY_STATE_ENUM.IDLE,
-        })
-        this.state = ENTITY_STATE_ENUM.IDLE
-        this.direction = DIRECTION_ENUM.TOP
+        super.init(params)
+        this.targetX = this.x
+        this.targetY = this.y
 
         EventManager.Instance.on(EVENT_ENUM.PLAYER_CTRL, this.inputHandle, this)
         EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)

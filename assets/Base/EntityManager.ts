@@ -2,9 +2,9 @@ import { _decorator, Component, Sprite, UITransform } from 'cc'
 
 import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, PARAMS_NAME_ENUM } from '../Enum'
 import { IEntity } from '../Level'
-import { PlayerStateMachine } from '../Script/Player/PlayerStateMachine'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Script/Tile/TileManager'
 import { randomByLen } from '../Util'
+import StateMachine from './StateMachine'
 
 const { ccclass } = _decorator
 
@@ -13,11 +13,11 @@ export class EntityManager extends Component {
     id: string = randomByLen(12)
     x: number
     y: number
-    fsm: PlayerStateMachine
+    fsm: StateMachine
+    type: ENTITY_TYPE_ENUM
 
     private _direction: DIRECTION_ENUM
     private _state: ENTITY_STATE_ENUM
-    private type: ENTITY_TYPE_ENUM
 
     get direction() {
         return this._direction
