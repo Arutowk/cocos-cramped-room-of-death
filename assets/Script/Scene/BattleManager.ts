@@ -4,6 +4,7 @@ import levels, { ILevel } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
 import { createUINode } from '../../Util'
+import { DoorManager } from '../Door/DoorManager'
 import { PlayerManager } from '../Player/PlayerManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { TileMapManager } from '../Tile/TileMapManager'
@@ -48,6 +49,8 @@ export class BattleManager extends Component {
             this.generatePlayer()
             //生成敌人
             this.generateEnemies()
+            //生成门
+            this.generateDoor()
         }
     }
 
@@ -94,6 +97,14 @@ export class BattleManager extends Component {
         const enemyManager = enemy.addComponent(WoodenSkeletonManager)
         await enemyManager.init()
         DataManager.Instance.enemies.push(enemyManager)
+    }
+
+    async generateDoor() {
+        const door = createUINode()
+        door.setParent(this.stage)
+        const doorManager = door.addComponent(DoorManager)
+        await doorManager.init()
+        DataManager.Instance.door = doorManager
     }
 
     //自适应调整地图位于屏幕中央
