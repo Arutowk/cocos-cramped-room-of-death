@@ -39,6 +39,9 @@ export default abstract class StateMachine extends Component {
         return this._currentState
     }
     set currentState(newState) {
+        if (!newState) {
+            return
+        }
         this._currentState = newState
         //播放动画
         this._currentState.run()

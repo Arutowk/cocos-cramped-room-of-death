@@ -1,32 +1,12 @@
 import { _decorator, Animation } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
-import StateMachine from '../../Base/StateMachine'
-import { ENTITY_STATE_ENUM, FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
+import StateMachine, { getInitParamsNumber, getInitParamsTrigger } from '../../Base/StateMachine'
+import { ENTITY_STATE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import AttackSubStateMachine from './AttackSubStateMachine'
+import DeathSubStateMachine from './DeathSubStateMachine'
 import IdleSubStateMachine from './IdleSubStateMachine'
 
 const { ccclass, property } = _decorator
-
-type ParamsValue = boolean | number
-
-export interface IParamsValue {
-    type: FSM_PARAM_TYPE_ENUM
-    value: ParamsValue
-}
-
-export const getInitParamsTrigger = () => {
-    return {
-        type: FSM_PARAM_TYPE_ENUM.TRIGGER,
-        value: false,
-    }
-}
-
-export const getInitParamsNumber = () => {
-    return {
-        type: FSM_PARAM_TYPE_ENUM.NUMBER,
-        value: 0,
-    }
-}
 
 @ccclass('WoodenSkeletonStateMachine')
 export class WoodenSkeletonStateMachine extends StateMachine {
@@ -45,12 +25,14 @@ export class WoodenSkeletonStateMachine extends StateMachine {
         this.params.set(PARAMS_NAME_ENUM.IDLE, getInitParamsTrigger())
         this.params.set(PARAMS_NAME_ENUM.DIRECTION, getInitParamsNumber())
         this.params.set(PARAMS_NAME_ENUM.ATTACK, getInitParamsTrigger())
+        this.params.set(PARAMS_NAME_ENUM.DEATH, getInitParamsTrigger())
     }
 
     //注册可能有的所有状态
     initStateMachines() {
         this.stateMachines.set(PARAMS_NAME_ENUM.IDLE, new IdleSubStateMachine(this))
         this.stateMachines.set(PARAMS_NAME_ENUM.ATTACK, new AttackSubStateMachine(this))
+        this.stateMachines.set(PARAMS_NAME_ENUM.DEATH, new DeathSubStateMachine(this))
     }
 
     initAnimationEvent() {
@@ -68,10 +50,13 @@ export class WoodenSkeletonStateMachine extends StateMachine {
         switch (this.currentState) {
             case this.stateMachines.get(PARAMS_NAME_ENUM.IDLE):
             case this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK):
+            case this.stateMachines.get(PARAMS_NAME_ENUM.DEATH):
                 if (this.params.get(PARAMS_NAME_ENUM.IDLE).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.IDLE)
                 } else if (this.params.get(PARAMS_NAME_ENUM.ATTACK).value) {
                     this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.ATTACK)
+                } else if (this.params.get(PARAMS_NAME_ENUM.DEATH).value) {
+                    this.currentState = this.stateMachines.get(PARAMS_NAME_ENUM.DEATH)
                 } else {
                     //保证触发currentState的set方法，才能触发子状态机的run方法
                     this.currentState = this.currentState

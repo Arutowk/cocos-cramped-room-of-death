@@ -21,14 +21,30 @@ export class WoodenSkeletonManager extends EntityManager {
             direction: DIRECTION_ENUM.TOP,
             state: ENTITY_STATE_ENUM.IDLE,
         })
-        EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
         EventManager.Instance.on(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection, this)
+        EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection, this)
         EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack, this)
+        EventManager.Instance.on(EVENT_ENUM.ATTACK_ENEMY, this.onDead, this)
         //保证无论敌人还是玩家先生成，敌人都能朝向玩家
         this.onChangeDirection(true)
     }
 
+    onDestroy() {
+        super.onDestroy()
+        EventManager.Instance.off(EVENT_ENUM.PLAYER_BORN, this.onChangeDirection)
+        EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onChangeDirection)
+        EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.onAttack)
+        EventManager.Instance.off(EVENT_ENUM.ATTACK_ENEMY, this.onDead)
+    }
+
+    onDead(id: string) {
+        if (this.state === ENTITY_STATE_ENUM.DEATH) return
+        if (id === this.id) this.state = ENTITY_STATE_ENUM.DEATH
+    }
+
     onAttack() {
+        if (this.state === ENTITY_STATE_ENUM.DEATH) return
+
         const { x: playerX, y: playerY, state: playerState } = DataManager.Instance.player
         if (
             //玩家在敌人周围4格时

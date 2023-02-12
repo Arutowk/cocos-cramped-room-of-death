@@ -4,11 +4,13 @@ import { DIRECTION_ENUM, DIRECTION_ORDER_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_EN
 import { IEntity } from '../Level'
 import { PlayerStateMachine } from '../Script/Player/PlayerStateMachine'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Script/Tile/TileManager'
+import { randomByLen } from '../Util'
 
 const { ccclass } = _decorator
 
 @ccclass('EntityManager')
 export class EntityManager extends Component {
+    id: string = randomByLen(12)
     x: number
     y: number
     fsm: PlayerStateMachine
@@ -52,4 +54,6 @@ export class EntityManager extends Component {
     update() {
         this.node.setPosition(this.x * TILE_WIDTH - 1.5 * TILE_WIDTH, 1.5 * TILE_HEIGHT - this.y * TILE_HEIGHT)
     }
+
+    onDestroy() {}
 }

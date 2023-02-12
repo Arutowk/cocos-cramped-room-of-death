@@ -20,3 +20,8 @@ const getNumberWithinString = (str: string) => parseInt(str.match(INDEX_REG)?.[1
 
 export const sortSpriteFrame = (spriteFrame: Array<SpriteFrame>) =>
     spriteFrame.sort((a, b) => getNumberWithinString(a.name) - getNumberWithinString(b.name))
+
+/**生成随机id */
+export function randomByLen(len: number) {
+    return Array.from({ length: len }).reduce<string>((total, item) => total + Math.floor(Math.random() * 10), '')
+}

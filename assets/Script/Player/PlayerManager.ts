@@ -73,9 +73,14 @@ export class PlayerManager extends EntityManager {
             this.state === ENTITY_STATE_ENUM.DEATH ||
             this.state === ENTITY_STATE_ENUM.AIRDEATH ||
             this.state === ENTITY_STATE_ENUM.ATTACK
-        )
+        ) {
             return
-        if (this.willAttack(inputDirection)) return
+        }
+        const id = this.willAttack(inputDirection)
+        if (id !== '') {
+            EventManager.Instance.emit(EVENT_ENUM.ATTACK_ENEMY, id)
+            return
+        }
         if (this.willBlock(inputDirection)) return
         this.move(inputDirection)
     }
@@ -120,13 +125,13 @@ export class PlayerManager extends EntityManager {
         }
     }
 
-    //判断将要攻击
-    willAttack(inputDirection: CONTROLLER_ENUM): boolean {
+    /** 判断将要攻击,如果存在敌人返回其id*/
+    willAttack(inputDirection: CONTROLLER_ENUM): string {
         const enemies = DataManager.Instance.enemies.filter(
             (enemy: WoodenSkeletonManager) => enemy.state !== ENTITY_STATE_ENUM.DEATH,
         )
         for (let i = 0; i < enemies.length; i++) {
-            const { x: enemyX, y: enemyY } = enemies[i]
+            const { x: enemyX, y: enemyY, id: enemyId } = enemies[i]
             if (
                 inputDirection === CONTROLLER_ENUM.TOP &&
                 this.direction === DIRECTION_ENUM.TOP &&
@@ -134,7 +139,7 @@ export class PlayerManager extends EntityManager {
                 enemyX === this.x
             ) {
                 this.state = ENTITY_STATE_ENUM.ATTACK
-                return true
+                return enemyId
             } else if (
                 inputDirection === CONTROLLER_ENUM.BOTTOM &&
                 this.direction === DIRECTION_ENUM.BOTTOM &&
@@ -142,7 +147,7 @@ export class PlayerManager extends EntityManager {
                 enemyX === this.x
             ) {
                 this.state = ENTITY_STATE_ENUM.ATTACK
-                return true
+                return enemyId
             } else if (
                 inputDirection === CONTROLLER_ENUM.LEFT &&
                 this.direction === DIRECTION_ENUM.LEFT &&
@@ -150,7 +155,7 @@ export class PlayerManager extends EntityManager {
                 enemyY === this.y
             ) {
                 this.state = ENTITY_STATE_ENUM.ATTACK
-                return true
+                return enemyId
             } else if (
                 inputDirection === CONTROLLER_ENUM.RIGHT &&
                 this.direction === DIRECTION_ENUM.RIGHT &&
@@ -158,10 +163,10 @@ export class PlayerManager extends EntityManager {
                 enemyY === this.y
             ) {
                 this.state = ENTITY_STATE_ENUM.ATTACK
-                return true
+                return enemyId
             }
         }
-        return false
+        return ''
     }
 
     //判断是否碰撞

@@ -27,6 +27,8 @@ export enum EVENT_ENUM {
     PLAYER_BORN = 'PLAYER_BORN',
     /** 玩家被攻击*/
     ATTACK_PLAYER = 'ATTACK_PLAYER',
+    /** 玩家攻击敌人*/
+    ATTACK_ENEMY = 'ATTACK_ENEMY',
 }
 
 /***

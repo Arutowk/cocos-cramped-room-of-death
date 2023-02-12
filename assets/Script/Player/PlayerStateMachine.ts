@@ -1,6 +1,6 @@
 import { _decorator, Animation } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
-import StateMachine from '../../Base/StateMachine'
+import StateMachine, { getInitParamsNumber, getInitParamsTrigger } from '../../Base/StateMachine'
 import { ENTITY_STATE_ENUM, FSM_PARAM_TYPE_ENUM, PARAMS_NAME_ENUM } from '../../Enum'
 import AttackSubStateMachine from './AttackSubStateMachine'
 import BlockBackSubStateMachine from './BlockBackSubStateMachine'
@@ -15,27 +15,6 @@ import TurnLeftSubStateMachine from './TurnLeftSubStateMachine'
 import TurnRightSubStateMachine from './TurnRightSubStateMachine'
 
 const { ccclass, property } = _decorator
-
-type ParamsValue = boolean | number
-
-export interface IParamsValue {
-    type: FSM_PARAM_TYPE_ENUM
-    value: ParamsValue
-}
-
-export const getInitParamsTrigger = () => {
-    return {
-        type: FSM_PARAM_TYPE_ENUM.TRIGGER,
-        value: false,
-    }
-}
-
-export const getInitParamsNumber = () => {
-    return {
-        type: FSM_PARAM_TYPE_ENUM.NUMBER,
-        value: 0,
-    }
-}
 
 @ccclass('PlayerStateMachine')
 export class PlayerStateMachine extends StateMachine {
