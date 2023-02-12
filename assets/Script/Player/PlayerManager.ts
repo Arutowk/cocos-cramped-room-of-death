@@ -5,8 +5,8 @@ import { EntityManager } from '../../Base/EntityManager'
 import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import EventManager from '../../Runtime/EventManager'
 import DataManager from '../../Runtime/Datamanager'
-import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 import { IEntity } from '../../Level'
+import { EnemyManager } from '../../Base/EnemyManager'
 
 const { ccclass } = _decorator
 
@@ -125,7 +125,7 @@ export class PlayerManager extends EntityManager {
     /** 判断将要攻击,如果存在敌人返回其id*/
     willAttack(inputDirection: CONTROLLER_ENUM): string {
         const enemies = DataManager.Instance.enemies.filter(
-            (enemy: WoodenSkeletonManager) => enemy.state !== ENTITY_STATE_ENUM.DEATH,
+            (enemy: EnemyManager) => enemy.state !== ENTITY_STATE_ENUM.DEATH,
         )
         for (let i = 0; i < enemies.length; i++) {
             const { x: enemyX, y: enemyY, id: enemyId } = enemies[i]
@@ -170,6 +170,9 @@ export class PlayerManager extends EntityManager {
     willBlock(inputDirection: CONTROLLER_ENUM): boolean {
         const { targetX: x, targetY: y, direction } = this
         const { tileInfo } = DataManager.Instance
+        const { x: doorX, y: doorY, state: doorState } = DataManager.Instance.door
+        const enemies = DataManager.Instance.enemies.filter(enemy => enemy.state !== ENTITY_STATE_ENUM.DEATH)
+
         let nowWeaPonX: number, nowWeaponY: number
         switch (direction) {
             case DIRECTION_ENUM.TOP:
@@ -192,46 +195,90 @@ export class PlayerManager extends EntityManager {
                 break
         }
         //操作后玩家假设在的位置和枪扫过的若干位置
-        let nextPlayerTile: TileManager | null,
-            nextWeaponTile: Array<TileManager | null> = []
+        let nextPlayerTile: TileManager | null, nextWeaponTile: Array<TileManager | null>
+        let nextPlayerX: number, nextPlayerY: number, nextWeaponXY: Array<[number, number]>
         switch (inputDirection) {
             case CONTROLLER_ENUM.TOP:
+                nextPlayerX = x
+                nextPlayerY = y - 1
+                nextWeaponXY = [[nowWeaPonX, nowWeaponY - 1]]
                 nextPlayerTile = tileInfo?.[x]?.[y - 1] ?? null
                 nextWeaponTile = [tileInfo?.[nowWeaPonX]?.[nowWeaponY - 1] ?? null]
                 break
             case CONTROLLER_ENUM.BOTTOM:
+                nextPlayerX = x
+                nextPlayerY = y + 1
+                nextWeaponXY = [[nowWeaPonX, nowWeaponY + 1]]
                 nextPlayerTile = tileInfo?.[x]?.[y + 1] ?? null
                 nextWeaponTile = [tileInfo?.[nowWeaPonX]?.[nowWeaponY + 1] ?? null]
                 break
             case CONTROLLER_ENUM.LEFT:
+                nextPlayerX = x - 1
+                nextPlayerY = y
+                nextWeaponXY = [[nowWeaPonX - 1, nowWeaponY]]
                 nextPlayerTile = tileInfo?.[x - 1]?.[y] ?? null
                 nextWeaponTile = [tileInfo?.[nowWeaPonX - 1]?.[nowWeaponY] ?? null]
                 break
             case CONTROLLER_ENUM.RIGHT:
+                nextPlayerX = x + 1
+                nextPlayerY = y
+                nextWeaponXY = [[nowWeaPonX + 1, nowWeaponY]]
                 nextPlayerTile = tileInfo?.[x + 1]?.[y] ?? null
                 nextWeaponTile = [tileInfo?.[nowWeaPonX + 1]?.[nowWeaponY] ?? null]
                 break
             case CONTROLLER_ENUM.TURNLEFT:
                 nextPlayerTile = tileInfo?.[x]?.[y] ?? null
                 if (direction === DIRECTION_ENUM.TOP) {
+                    nextWeaponXY = [
+                        [x - 1, y - 1],
+                        [x - 1, y],
+                    ]
                     nextWeaponTile = [tileInfo?.[x - 1]?.[y - 1] ?? null, tileInfo?.[x - 1]?.[y] ?? null]
                 } else if (direction === DIRECTION_ENUM.BOTTOM) {
+                    nextWeaponXY = [
+                        [x + 1, y + 1],
+                        [x + 1, y],
+                    ]
                     nextWeaponTile = [tileInfo?.[x + 1]?.[y + 1] ?? null, tileInfo?.[x + 1]?.[y] ?? null]
                 } else if (direction === DIRECTION_ENUM.LEFT) {
+                    nextWeaponXY = [
+                        [x - 1, y + 1],
+                        [x, y + 1],
+                    ]
                     nextWeaponTile = [tileInfo?.[x - 1]?.[y + 1] ?? null, tileInfo?.[x]?.[y + 1] ?? null]
                 } else if (direction === DIRECTION_ENUM.RIGHT) {
+                    nextWeaponXY = [
+                        [x + 1, y - 1],
+                        [x, y - 1],
+                    ]
                     nextWeaponTile = [tileInfo?.[x + 1]?.[y - 1] ?? null, tileInfo?.[x]?.[y - 1] ?? null]
                 }
                 break
             case CONTROLLER_ENUM.TURNRIGHT:
                 nextPlayerTile = tileInfo?.[x]?.[y] ?? null
                 if (direction === DIRECTION_ENUM.TOP) {
+                    nextWeaponXY = [
+                        [x + 1, y - 1],
+                        [x + 1, y],
+                    ]
                     nextWeaponTile = [tileInfo?.[x + 1]?.[y - 1] ?? null, tileInfo?.[x + 1]?.[y] ?? null]
                 } else if (direction === DIRECTION_ENUM.BOTTOM) {
+                    nextWeaponXY = [
+                        [x - 1, y + 1],
+                        [x - 1, y],
+                    ]
                     nextWeaponTile = [tileInfo?.[x - 1]?.[y + 1] ?? null, tileInfo?.[x - 1]?.[y] ?? null]
                 } else if (direction === DIRECTION_ENUM.LEFT) {
+                    nextWeaponXY = [
+                        [x - 1, y - 1],
+                        [x, y - 1],
+                    ]
                     nextWeaponTile = [tileInfo?.[x - 1]?.[y - 1] ?? null, tileInfo?.[x]?.[y - 1] ?? null]
                 } else if (direction === DIRECTION_ENUM.RIGHT) {
+                    nextWeaponXY = [
+                        [x + 1, y - 1],
+                        [x, y + 1],
+                    ]
                     nextWeaponTile = [tileInfo?.[x + 1]?.[y + 1] ?? null, tileInfo?.[x]?.[y + 1] ?? null]
                 }
                 break
@@ -239,9 +286,16 @@ export class PlayerManager extends EntityManager {
                 break
         }
         if (
-            nextPlayerTile === null ||
-            nextPlayerTile?.moveable === false ||
-            nextWeaponTile.some(tile => tile?.turnable === false)
+            nextPlayerTile === null || //人物遇到悬崖
+            nextPlayerTile?.moveable === false || //人物撞墙
+            nextWeaponTile.some(tile => tile?.turnable === false) || //枪撞墙
+            (nextPlayerX === doorX && nextPlayerY === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //人物撞到门
+            nextWeaponXY.some(xy => xy[0] === doorX && xy[1] === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //枪撞到门
+            enemies.some(
+                enemy =>
+                    (enemy.x === nextWeaponXY[0][0] && enemy.y === nextWeaponXY[0][1]) ||
+                    (enemy.x === (nextWeaponXY?.[1]?.[0] ?? -1) && enemy.y === (nextWeaponXY?.[1]?.[1] ?? -1)),
+            ) //枪转向的时候撞敌人
         ) {
             switch (inputDirection) {
                 case CONTROLLER_ENUM.TOP:
