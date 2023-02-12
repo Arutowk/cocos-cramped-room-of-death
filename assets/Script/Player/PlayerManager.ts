@@ -30,6 +30,13 @@ export class PlayerManager extends EntityManager {
         EventManager.Instance.on(EVENT_ENUM.ATTACK_PLAYER, this.onDead, this)
     }
 
+    //不解绑事件的话，在切换关卡的时候Player重新生成会出错
+    onDestroy() {
+        super.onDestroy()
+        EventManager.Instance.off(EVENT_ENUM.PLAYER_CTRL, this.inputHandle)
+        EventManager.Instance.off(EVENT_ENUM.ATTACK_PLAYER, this.onDead)
+    }
+
     update() {
         super.update()
         this.updateXY()
