@@ -3,7 +3,7 @@ const { ccclass, property } = _decorator
 
 const SCREEN_WIDTH = view.getVisibleSize().width
 const SCREEN_HEIGHT = view.getVisibleSize().height
-export const DEFAULT_FADE_DURATION = 2000
+export const DEFAULT_FADE_DURATION = 1000
 
 enum FadeStatus {
     IDLE,

@@ -2,7 +2,14 @@ import { _decorator } from 'cc'
 import { PlayerStateMachine } from './PlayerStateMachine'
 import { TileManager } from '../Tile/TileManager'
 import { EntityManager } from '../../Base/EntityManager'
-import { CONTROLLER_ENUM, DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import {
+    CONTROLLER_ENUM,
+    DIRECTION_ENUM,
+    ENTITY_STATE_ENUM,
+    ENTITY_TYPE_ENUM,
+    EVENT_ENUM,
+    SHAKE_TYPE_ENUM,
+} from '../../Enum'
 import EventManager from '../../Runtime/EventManager'
 import DataManager from '../../Runtime/Datamanager'
 import { IEntity } from '../../Level'
@@ -85,7 +92,49 @@ export class PlayerManager extends EntityManager {
             EventManager.Instance.emit(EVENT_ENUM.DOOR_OPEN)
             return
         }
-        if (this.willBlock(inputDirection)) return
+        if (this.willBlock(inputDirection)) {
+            let type: SHAKE_TYPE_ENUM
+            if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
+                if (this.direction === DIRECTION_ENUM.TOP) {
+                    type = SHAKE_TYPE_ENUM.LEFT
+                } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
+                    type = SHAKE_TYPE_ENUM.RIGHT
+                } else if (this.direction === DIRECTION_ENUM.LEFT) {
+                    type = SHAKE_TYPE_ENUM.BOTTOM
+                } else if (this.direction === DIRECTION_ENUM.RIGHT) {
+                    type = SHAKE_TYPE_ENUM.TOP
+                }
+            } else if (inputDirection === CONTROLLER_ENUM.TURNRIGHT) {
+                if (this.direction === DIRECTION_ENUM.TOP) {
+                    type = SHAKE_TYPE_ENUM.RIGHT
+                } else if (this.direction === DIRECTION_ENUM.BOTTOM) {
+                    type = SHAKE_TYPE_ENUM.LEFT
+                } else if (this.direction === DIRECTION_ENUM.LEFT) {
+                    type = SHAKE_TYPE_ENUM.TOP
+                } else if (this.direction === DIRECTION_ENUM.RIGHT) {
+                    type = SHAKE_TYPE_ENUM.BOTTOM
+                }
+            } else {
+                switch (inputDirection) {
+                    case CONTROLLER_ENUM.TOP:
+                        type = SHAKE_TYPE_ENUM.TOP
+                        break
+                    case CONTROLLER_ENUM.BOTTOM:
+                        type = SHAKE_TYPE_ENUM.BOTTOM
+                        break
+                    case CONTROLLER_ENUM.LEFT:
+                        type = SHAKE_TYPE_ENUM.LEFT
+                        break
+                    case CONTROLLER_ENUM.RIGHT:
+                        type = SHAKE_TYPE_ENUM.RIGHT
+                        break
+                    default:
+                        break
+                }
+            }
+            EventManager.Instance.emit(EVENT_ENUM.SCREEN_SHAKE, type)
+            return
+        }
         this.move(inputDirection)
     }
 

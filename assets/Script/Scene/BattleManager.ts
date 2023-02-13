@@ -13,6 +13,7 @@ import { SmokeManager } from '../Smoke/SmokeManager'
 import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { TileMapManager } from '../Tile/TileMapManager'
+import { ShakeManager } from '../UI/ShakeManager'
 import { WoodenSkeletonManager } from '../WoodenSkeleton/WoodenSkeletonManager'
 
 const { ccclass } = _decorator
@@ -99,6 +100,7 @@ export class BattleManager extends Component {
         //创建舞台
         this.stage = createUINode()
         this.stage.setParent(this.node)
+        this.stage.addComponent(ShakeManager)
     }
 
     async generateTileMap() {
@@ -207,6 +209,7 @@ export class BattleManager extends Component {
         const { mapColumnCount, mapRowCount } = DataManager.Instance
         const disX = (TILE_WIDTH * mapRowCount) / 2
         const disY = (TILE_HEIGHT * mapColumnCount) / 2 + 80
+        this.stage.getComponent(ShakeManager).stop()
         this.stage.setPosition(-disX, disY)
     }
 }

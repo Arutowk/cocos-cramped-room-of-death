@@ -33,6 +33,8 @@ export enum EVENT_ENUM {
     DOOR_OPEN = 'DOOR_OPEN',
     /** 产生烟雾*/
     SHOW_SMOKE = 'SHOW_SMOKE',
+    /** 撞墙屏幕抖动*/
+    SCREEN_SHAKE = 'SCREEN_SHAKE',
 }
 
 /***
@@ -162,4 +164,11 @@ export enum SPIKES_COUNT_MAP_NUMBER_ENUM {
     THREE = 3,
     FOUR = 4,
     FIVE = 5,
+}
+
+export enum SHAKE_TYPE_ENUM {
+    TOP = 'TOP',
+    BOTTOM = 'BOTTOM',
+    LEFT = 'LEFT',
+    RIGHT = 'RIGHT',
 }
