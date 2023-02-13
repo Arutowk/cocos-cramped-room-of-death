@@ -16,6 +16,7 @@ export default class State {
         private path: string,
         private wrapMode: AnimationClip.WrapMode = AnimationClip.WrapMode.Normal,
         private speed: number = ANIMATION_SPEED,
+        private events: Array<AnimationClip.IEvent> = [],
     ) {
         this.init()
     }
@@ -40,6 +41,11 @@ export default class State {
         this.animationClip.name = this.path
         this.animationClip.duration = frames.length * this.speed //整个动画剪辑的周期
         this.animationClip.wrapMode = this.wrapMode
+
+        for (const event of this.events) {
+            this.animationClip.events.push(event)
+        }
+        this.animationClip.updateEventDatas()
     }
 
     run() {

@@ -1,6 +1,6 @@
 import { UITransform, _decorator } from 'cc'
 import { EntityManager } from '../../Base/EntityManager'
-import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, SHAKE_TYPE_ENUM } from '../../Enum'
 import { IEntity } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
@@ -38,6 +38,7 @@ export class BurstManager extends EntityManager {
             this.state = ENTITY_STATE_ENUM.ATTACK
         } else if (this.state === ENTITY_STATE_ENUM.ATTACK) {
             this.state = ENTITY_STATE_ENUM.DEATH
+            EventManager.Instance.emit(EVENT_ENUM.SCREEN_SHAKE, SHAKE_TYPE_ENUM.BOTTOM)
             //如果砖裂开的时候人在上面，玩家空中死亡
             if (this.x === playerX && this.y === playerY) {
                 EventManager.Instance.emit(EVENT_ENUM.ATTACK_PLAYER, ENTITY_STATE_ENUM.AIRDEATH)
