@@ -3,6 +3,7 @@ import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from 
 import levels, { ILevel } from '../../Level'
 import DataManager from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
+import FaderManager from '../../Runtime/FaderManager'
 import { createUINode } from '../../Util'
 import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
@@ -22,6 +23,7 @@ export class BattleManager extends Component {
     stage: Node
 
     private smokeLayer: Node
+    private hasInited = false //第一次从菜单进来的时候，入场fade效果不一样，特殊处理一下
 
     onLoad() {
         DataManager.Instance.levelIndex = 1
@@ -33,6 +35,7 @@ export class BattleManager extends Component {
     onDestroy() {
         EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
         EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived)
+        EventManager.Instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
 
         EventManager.Instance.clear()
     }
@@ -42,9 +45,15 @@ export class BattleManager extends Component {
         this.initLevel()
     }
 
-    initLevel() {
+    async initLevel() {
         const level = levels[`level${DataManager.Instance.levelIndex}`]
         if (level) {
+            if (this.hasInited) {
+                await FaderManager.Instance.fadeIn()
+            } else {
+                await FaderManager.Instance.mask()
+            }
+
             this.clearLevel()
 
             // 储存关卡等级
@@ -55,19 +64,23 @@ export class BattleManager extends Component {
             DataManager.Instance.mapRowCount = this.level.mapInfo.length || 0
             DataManager.Instance.mapColumnCount = this.level.mapInfo[0]?.length || 0
 
-            // 生成地图
-            this.generateTileMap()
-            this.generateSmokeLayer()
-            //生成敌人
-            this.generateEnemies()
-            //生成门
-            this.generateDoor()
-            //生成砖片
-            // this.generateBurst()
-            //生成地刺
-            // this.generateSpikes()
+            await Promise.all([
+                // 生成地图
+                this.generateTileMap(),
+                this.generateSmokeLayer(),
+                //生成敌人
+                this.generateEnemies(),
+                //生成门
+                this.generateDoor(),
+                //生成砖片
+                this.generateBurst(),
+                //生成地刺
+                this.generateSpikes(),
+            ])
             // 生成玩家
-            this.generatePlayer()
+            await this.generatePlayer()
+            await FaderManager.Instance.fadeOut()
+            this.hasInited = true
         }
     }
 
