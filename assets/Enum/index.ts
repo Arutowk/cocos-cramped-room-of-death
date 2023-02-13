@@ -31,6 +31,8 @@ export enum EVENT_ENUM {
     ATTACK_ENEMY = 'ATTACK_ENEMY',
     /** 打开下一关的门*/
     DOOR_OPEN = 'DOOR_OPEN',
+    /** 产生烟雾*/
+    SHOW_SMOKE = 'SHOW_SMOKE',
 }
 
 /***

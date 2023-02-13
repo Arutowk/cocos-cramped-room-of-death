@@ -93,15 +93,19 @@ export class PlayerManager extends EntityManager {
         if (inputDirection === CONTROLLER_ENUM.TOP) {
             this.targetY -= 1
             this.isMoving = true
+            this.showSmoke(DIRECTION_ENUM.TOP)
         } else if (inputDirection === CONTROLLER_ENUM.BOTTOM) {
             this.targetY += 1
             this.isMoving = true
+            this.showSmoke(DIRECTION_ENUM.BOTTOM)
         } else if (inputDirection === CONTROLLER_ENUM.LEFT) {
             this.targetX -= 1
             this.isMoving = true
+            this.showSmoke(DIRECTION_ENUM.LEFT)
         } else if (inputDirection === CONTROLLER_ENUM.RIGHT) {
             this.targetX += 1
             this.isMoving = true
+            this.showSmoke(DIRECTION_ENUM.RIGHT)
         } else if (inputDirection === CONTROLLER_ENUM.TURNLEFT) {
             if (this.direction === DIRECTION_ENUM.TOP) {
                 this.direction = DIRECTION_ENUM.LEFT
@@ -127,6 +131,10 @@ export class PlayerManager extends EntityManager {
             this.state = ENTITY_STATE_ENUM.TURNRIGHT
             EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
         }
+    }
+
+    showSmoke(dir: DIRECTION_ENUM) {
+        EventManager.Instance.emit(EVENT_ENUM.SHOW_SMOKE, this.x, this.y, dir)
     }
 
     /** 判断将要攻击,如果存在敌人返回其id*/

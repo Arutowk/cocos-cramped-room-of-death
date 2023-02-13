@@ -8,6 +8,7 @@ import { BurstManager } from '../Burst/BurstManager'
 import { DoorManager } from '../Door/DoorManager'
 import { IronSkeletonManager } from '../IronSkeleton/IronSkeletonManager'
 import { PlayerManager } from '../Player/PlayerManager'
+import { SmokeManager } from '../Smoke/SmokeManager'
 import { SpikesManager } from '../Spikes/SpikesManager'
 import { TILE_HEIGHT, TILE_WIDTH } from '../Tile/TileManager'
 import { TileMapManager } from '../Tile/TileMapManager'
@@ -20,10 +21,13 @@ export class BattleManager extends Component {
     level: ILevel
     stage: Node
 
+    private smokeLayer: Node
+
     onLoad() {
         DataManager.Instance.levelIndex = 1
         EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
         EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
+        EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
     }
 
     onDestroy() {
@@ -53,6 +57,7 @@ export class BattleManager extends Component {
 
             // 生成地图
             this.generateTileMap()
+            this.generateSmokeLayer()
             //生成敌人
             this.generateEnemies()
             //生成门
@@ -150,7 +155,33 @@ export class BattleManager extends Component {
         await Promise.all(promise)
     }
 
+    //引入缓存池，避免重新生成大量烟雾实例
+    async generateSmoke(x: number, y: number, direction: DIRECTION_ENUM) {
+        const item = DataManager.Instance.smokes.find(smoke => smoke.state === ENTITY_STATE_ENUM.DEATH)
+        if (item) {
+            //已经生成烟雾的话改变位置和变成出生状态
+            item.x = x
+            item.y = y
+            item.direction = direction
+            item.node.setPosition(x * TILE_WIDTH - 1.5 * TILE_WIDTH, 1.5 * TILE_HEIGHT - y * TILE_HEIGHT)
+            item.state = ENTITY_STATE_ENUM.IDLE
+        } else {
+            const smoke = createUINode()
+            smoke.setParent(this.smokeLayer)
+            const smokeManager = smoke.addComponent(SmokeManager)
+            await smokeManager.init({ x, y, direction, state: ENTITY_STATE_ENUM.IDLE, type: ENTITY_TYPE_ENUM.SMOKE })
+            DataManager.Instance.smokes.push(smokeManager)
+        }
+    }
+
+    //让人的UI盖住Smoke的UI
+    async generateSmokeLayer() {
+        this.smokeLayer = createUINode()
+        this.smokeLayer.setParent(this.stage)
+    }
+
     checkArrived() {
+        if (!DataManager.Instance.door || !DataManager.Instance.player) return
         const { x: playerX, y: playerY } = DataManager.Instance.player
         const { x: doorX, y: doorY, state: doorState } = DataManager.Instance.door
         if (playerX === doorX && playerY === doorY && doorState === ENTITY_STATE_ENUM.DEATH) {
