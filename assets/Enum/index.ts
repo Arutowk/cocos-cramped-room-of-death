@@ -35,6 +35,10 @@ export enum EVENT_ENUM {
     SHOW_SMOKE = 'SHOW_SMOKE',
     /** 撞墙屏幕抖动*/
     SCREEN_SHAKE = 'SCREEN_SHAKE',
+    /** 记录上一步*/
+    RECORD_STEP = 'RECORD_STEP',
+    /** 撤回到上一步*/
+    REVOKE_STEP = 'REVOKE_STEP',
 }
 
 /***

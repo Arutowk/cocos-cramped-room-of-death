@@ -1,7 +1,7 @@
 import { _decorator, Component, Node } from 'cc'
 import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
 import levels, { ILevel } from '../../Level'
-import DataManager from '../../Runtime/Datamanager'
+import DataManager, { IRecord } from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
 import FaderManager from '../../Runtime/FaderManager'
 import { createUINode } from '../../Util'
@@ -31,12 +31,16 @@ export class BattleManager extends Component {
         EventManager.Instance.on(EVENT_ENUM.NEXT_LEVEL, this.nextLevel, this)
         EventManager.Instance.on(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived, this)
         EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
+        EventManager.Instance.on(EVENT_ENUM.RECORD_STEP, this.record, this)
+        EventManager.Instance.on(EVENT_ENUM.REVOKE_STEP, this.revoke, this)
     }
 
     onDestroy() {
         EventManager.Instance.off(EVENT_ENUM.NEXT_LEVEL, this.nextLevel)
         EventManager.Instance.off(EVENT_ENUM.PLAYER_MOVE_END, this.checkArrived)
         EventManager.Instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
+        EventManager.Instance.off(EVENT_ENUM.RECORD_STEP, this.record)
+        EventManager.Instance.off(EVENT_ENUM.REVOKE_STEP, this.revoke)
 
         EventManager.Instance.clear()
     }
@@ -211,5 +215,93 @@ export class BattleManager extends Component {
         const disY = (TILE_HEIGHT * mapColumnCount) / 2 + 80
         this.stage.getComponent(ShakeManager).stop()
         this.stage.setPosition(-disX, disY)
+    }
+
+    record() {
+        const item: IRecord = {
+            player: {
+                x: DataManager.Instance.player.targetX,
+                y: DataManager.Instance.player.targetY,
+                state:
+                    DataManager.Instance.player.state === ENTITY_STATE_ENUM.IDLE ||
+                    DataManager.Instance.player.state === ENTITY_STATE_ENUM.DEATH ||
+                    DataManager.Instance.player.state === ENTITY_STATE_ENUM.AIRDEATH
+                        ? DataManager.Instance.player.state
+                        : ENTITY_STATE_ENUM.IDLE,
+                direction: DataManager.Instance.player.direction,
+                type: DataManager.Instance.player.type,
+            },
+            door: {
+                x: DataManager.Instance.door.x,
+                y: DataManager.Instance.door.y,
+                state: DataManager.Instance.door.state,
+                direction: DataManager.Instance.door.direction,
+                type: DataManager.Instance.door.type,
+            },
+            enemies: DataManager.Instance.enemies.map(({ x, y, state, direction, type }) => {
+                return {
+                    x,
+                    y,
+                    state,
+                    direction,
+                    type,
+                }
+            }),
+            spikes: DataManager.Instance.spikes.map(({ x, y, count, type }) => {
+                return {
+                    x,
+                    y,
+                    count,
+                    type,
+                }
+            }),
+            bursts: DataManager.Instance.bursts.map(({ x, y, state, direction, type }) => {
+                return {
+                    x,
+                    y,
+                    state,
+                    direction,
+                    type,
+                }
+            }),
+        }
+        DataManager.Instance.records.push(item)
+    }
+
+    revoke() {
+        const data = DataManager.Instance.records.pop()
+        if (data) {
+            DataManager.Instance.player.x = DataManager.Instance.player.targetX = data.player.x
+            DataManager.Instance.player.y = DataManager.Instance.player.targetY = data.player.y
+            DataManager.Instance.player.state = data.player.state
+            DataManager.Instance.player.direction = data.player.direction
+
+            for (let i = 0; i < data.enemies.length; i++) {
+                const item = data.enemies[i]
+                DataManager.Instance.enemies[i].x = item.x
+                DataManager.Instance.enemies[i].y = item.y
+                DataManager.Instance.enemies[i].state = item.state
+                DataManager.Instance.enemies[i].direction = item.direction
+            }
+
+            for (let i = 0; i < data.spikes.length; i++) {
+                const item = data.spikes[i]
+                DataManager.Instance.spikes[i].x = item.x
+                DataManager.Instance.spikes[i].y = item.y
+                DataManager.Instance.spikes[i].count = item.count
+            }
+
+            for (let i = 0; i < data.bursts.length; i++) {
+                const item = data.bursts[i]
+                DataManager.Instance.bursts[i].x = item.x
+                DataManager.Instance.bursts[i].y = item.y
+                DataManager.Instance.bursts[i].state = item.state
+            }
+
+            DataManager.Instance.door.x = data.door.x
+            DataManager.Instance.door.y = data.door.y
+            DataManager.Instance.door.state = data.door.state
+            DataManager.Instance.door.direction = data.door.direction
+        }
     }
 }
