@@ -12,7 +12,7 @@ import {
 } from '../../Enum'
 import EventManager from '../../Runtime/EventManager'
 import DataManager from '../../Runtime/Datamanager'
-import { IEntity } from '../../Level'
+import levels, { IEntity } from '../../Level'
 import { EnemyManager } from '../../Base/EnemyManager'
 
 const { ccclass } = _decorator
@@ -70,6 +70,16 @@ export class PlayerManager extends EntityManager {
             this.y = this.targetY
             this.isMoving = false
             EventManager.Instance.emit(EVENT_ENUM.PLAYER_MOVE_END)
+
+            //掉落直接死亡额外逻辑
+            const tile = DataManager.Instance.tileInfo?.[this.x]?.[this.y] ?? null
+            const liveBursts = DataManager.Instance.bursts.filter(burst => burst.state !== ENTITY_STATE_ENUM.DEATH)
+            if (
+                ((tile?.moveable === false && tile?.turnable === true) || tile === null) &&
+                !liveBursts.some(burst => burst.x === this.x && burst.y === this.y)
+            ) {
+                this.state = ENTITY_STATE_ENUM.AIRDEATH
+            }
         }
     }
 
@@ -363,11 +373,11 @@ export class PlayerManager extends EntityManager {
                 break
         }
         if (
+            //加大难度掉落直接死版本,updateXY也要补充掉落死的逻辑》》
             (nextPlayerTile?.moveable === false &&
+                nextPlayerTile?.turnable === false &&
                 !isTurn &&
                 !liveBursts.some(burst => burst.x === nextPlayerX && burst.y === nextPlayerY)) || //人物撞墙
-            ((nextPlayerTile === null || (nextPlayerTile?.moveable === false && nextPlayerTile?.turnable === true)) &&
-                liveBursts.every(burst => burst.x !== nextPlayerX && burst.y !== nextPlayerY)) || //人物遇到没有砖片的悬崖
             nextWeaponTile.some(tile => tile?.turnable === false) || //枪撞墙
             (nextPlayerX === doorX && nextPlayerY === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //人物撞到门
             nextWeaponXY.some(xy => xy[0] === doorX && xy[1] === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //枪撞到门
@@ -376,6 +386,22 @@ export class PlayerManager extends EntityManager {
                     (enemy.x === nextWeaponXY[0][0] && enemy.y === nextWeaponXY[0][1]) ||
                     (enemy.x === (nextWeaponXY?.[1]?.[0] ?? -1) && enemy.y === (nextWeaponXY?.[1]?.[1] ?? -1)),
             ) //枪转向的时候撞敌人
+
+            //普通难度走下悬崖会被阻挡》》
+            // ((nextPlayerTile?.moveable === false || nextPlayerTile === null) &&
+            //     !isTurn &&
+            //     !liveBursts.some(burst => burst.x === nextPlayerX && burst.y === nextPlayerY)) || //人物撞墙
+            // ((nextPlayerTile === null || (nextPlayerTile?.moveable === false && nextPlayerTile?.turnable === true)) &&
+            //     !isTurn &&
+            //     liveBursts.every(burst => burst.x !== nextPlayerX && burst.y !== nextPlayerY)) || //人物遇到没有砖片的悬崖
+            // nextWeaponTile.some(tile => tile?.turnable === false) || //枪撞墙
+            // (nextPlayerX === doorX && nextPlayerY === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //人物撞到门
+            // nextWeaponXY.some(xy => xy[0] === doorX && xy[1] === doorY && doorState === ENTITY_STATE_ENUM.IDLE) || //枪撞到门
+            // enemies.some(
+            //     enemy =>
+            //         (enemy.x === nextWeaponXY[0][0] && enemy.y === nextWeaponXY[0][1]) ||
+            //         (enemy.x === (nextWeaponXY?.[1]?.[0] ?? -1) && enemy.y === (nextWeaponXY?.[1]?.[1] ?? -1)),
+            // ) //枪转向的时候撞敌人
         ) {
             switch (inputDirection) {
                 case CONTROLLER_ENUM.TOP:
