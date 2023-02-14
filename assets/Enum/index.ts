@@ -39,6 +39,10 @@ export enum EVENT_ENUM {
     RECORD_STEP = 'RECORD_STEP',
     /** 撤回到上一步*/
     REVOKE_STEP = 'REVOKE_STEP',
+    /** 重新开始当前关卡*/
+    RESTART_LEVEL = 'RESTART_LEVEL',
+    /**退出关卡*/
+    QUIT_BATTLE = 'QUIT_BATTLE',
 }
 
 /***
@@ -175,4 +179,10 @@ export enum SHAKE_TYPE_ENUM {
     BOTTOM = 'BOTTOM',
     LEFT = 'LEFT',
     RIGHT = 'RIGHT',
+}
+
+export enum SCENE_ENUM {
+    Loading = 'Loading',
+    Start = 'Start',
+    Battle = 'Battle',
 }

@@ -1,5 +1,5 @@
-import { _decorator, Component, Node } from 'cc'
-import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM } from '../../Enum'
+import { _decorator, Component, Node, director } from 'cc'
+import { DIRECTION_ENUM, ENTITY_STATE_ENUM, ENTITY_TYPE_ENUM, EVENT_ENUM, SCENE_ENUM } from '../../Enum'
 import levels, { ILevel } from '../../Level'
 import DataManager, { IRecord } from '../../Runtime/Datamanager'
 import EventManager from '../../Runtime/EventManager'
@@ -33,6 +33,8 @@ export class BattleManager extends Component {
         EventManager.Instance.on(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke, this)
         EventManager.Instance.on(EVENT_ENUM.RECORD_STEP, this.record, this)
         EventManager.Instance.on(EVENT_ENUM.REVOKE_STEP, this.revoke, this)
+        EventManager.Instance.on(EVENT_ENUM.RESTART_LEVEL, this.initLevel, this)
+        EventManager.Instance.on(EVENT_ENUM.QUIT_BATTLE, this.quitBattle, this)
     }
 
     onDestroy() {
@@ -41,6 +43,8 @@ export class BattleManager extends Component {
         EventManager.Instance.off(EVENT_ENUM.SHOW_SMOKE, this.generateSmoke)
         EventManager.Instance.off(EVENT_ENUM.RECORD_STEP, this.record)
         EventManager.Instance.off(EVENT_ENUM.REVOKE_STEP, this.revoke)
+        EventManager.Instance.off(EVENT_ENUM.RESTART_LEVEL, this.initLevel)
+        EventManager.Instance.off(EVENT_ENUM.QUIT_BATTLE, this.quitBattle)
 
         EventManager.Instance.clear()
     }
@@ -86,12 +90,20 @@ export class BattleManager extends Component {
             await this.generatePlayer()
             await FaderManager.Instance.fadeOut()
             this.hasInited = true
+        } else {
+            this.quitBattle()
         }
     }
 
     nextLevel() {
         DataManager.Instance.levelIndex++
         this.initLevel()
+    }
+
+    async quitBattle() {
+        await FaderManager.Instance.fadeIn()
+        this.node.destroy()
+        director.loadScene(SCENE_ENUM.Start)
     }
 
     clearLevel() {
