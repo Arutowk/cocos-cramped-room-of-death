@@ -385,7 +385,8 @@ export class PlayerManager extends EntityManager {
                 enemy =>
                     (enemy.x === nextWeaponXY[0][0] && enemy.y === nextWeaponXY[0][1]) ||
                     (enemy.x === (nextWeaponXY?.[1]?.[0] ?? -1) && enemy.y === (nextWeaponXY?.[1]?.[1] ?? -1)),
-            ) //枪转向的时候撞敌人
+            ) || //枪转向的时候撞敌人
+            (x === doorX && y === doorY) //到达门的位置
 
             //普通难度走下悬崖会被阻挡》》
             // ((nextPlayerTile?.moveable === false || nextPlayerTile === null) &&
